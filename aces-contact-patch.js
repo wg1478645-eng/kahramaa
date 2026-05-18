@@ -20,17 +20,11 @@
 
   // ─── CONFIG ────────────────────────────────────────────
   // غيّر هذا الرابط إذا رفعت scan.html في مسار مختلف
-const SCAN_PAGE_URL = 'https://wg1478645-eng.github.io/kahramaa/scan.html';
-';
+const SCAN_PAGE_URL = 'https://wg1478645-eng.github.io/kahramaa/';
 
-  // ─── HELPERS ───────────────────────────────────────────
-  function getWorkshopData() {
-    try { return JSON.parse(localStorage.getItem('acesWorkshops') || '{}'); }
-    catch(e) { return {}; }
-  }
-  function saveWorkshopData(d) {
-    localStorage.setItem('acesWorkshops', JSON.stringify(d));
-  }
+function buildScanURL(workshopId, traineeId, day ) {
+  return `${SCAN_PAGE_URL}?w=${encodeURIComponent(workshopId)}&t=${encodeURIComponent(traineeId)}&d=${day}`;
+}
 
   // ─── 1. OVERRIDE QR URL GENERATOR ──────────────────────
   /**
