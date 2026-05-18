@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACES — تسجيل الحضور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://aces-workshops-default-rtdb.firebaseio.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap"></noscript>
+<style>
+:root{
+--g1:#0a5c3e;--g2:#0e7a54;--g3:#12a06e;--g4:#eaf6f1;--g5:#c8e8d8;
+--gold:#c8830a;--red:#b83030;--red2:#fde8e8;--blue:#1255a0;--blue2:#e6f0fb;
+--bg:#f5f9f7;--card:#fff;--text:#0e1f18;--muted:#4a7060;--border:#b8d8cc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+nav{background:#fff;border-bottom:2px solid var(--border);padding:0 18px;height:60px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 12px rgba(10,92,62,.09);position:sticky;top:0;z-index:10}
+nav img{height:38px;width:auto}
+nav h1{font-size:.88rem;font-weight:900;color:var(--g1)}
+.wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px 16px 40px}
+.card{background:var(--card);border-radius:20px;border:1.5px solid var(--border);box-shadow:0 4px 24px rgba(10,92,62,.10);padding:28px;width:100%;max-width:440px;animation:fadeUp .4s ease}
+.trainee-banner{background:linear-gradient(135deg,var(--g4),#d0f0e8);border:1.5px solid var(--g5);border-radius:14px;padding:14px 16px;margin-bottom:22px;display:flex;align-items:center;gap:14px}
+.t-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;font-weight:900;flex-shrink:0}
+.t-info h3{font-size:.95rem;font-weight:900;color:var(--g1)}
+.t-info p{font-size:.78rem;color:var(--muted);margin-top:1px}
+.t-day{background:var(--g1);color:#fff;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:5px;display:inline-block}
+.sec-title{font-size:.88rem;font-weight:800;color:var(--g1);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.sec-title::before{content:'';display:inline-block;width:4px;height:18px;background:var(--g3);border-radius:4px}
+.form-g{margin-bottom:14px}
+.inp-label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:5px}
+.inp-label .req{color:var(--red);margin-right:2px}
+.inp-wrap{position:relative;display:flex;align-items:center}
+.inp-icon{position:absolute;right:12px;font-size:1rem;color:var(--muted);pointer-events:none}
+.inp{width:100%;padding:11px 38px 11px 12px;border:2px solid var(--border);border-radius:12px;font-family:'Tajawal',sans-serif;font-size:.9rem;color:var(--text);background:#fff;outline:none;transition:.18s;direction:ltr;text-align:right}
+.inp:focus{border-color:var(--g3);box-shadow:0 0 0 3px rgba(18,160,110,.08)}
+.inp.err{border-color:var(--red)}
+.err-msg{font-size:.73rem;color:var(--red);margin-top:4px;display:none}
+.err-msg.show{display:block}
+.hint{font-size:.72rem;color:var(--muted);margin-top:4px}
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--g2),var(--g3));color:#fff;border:none;border-radius:13px;font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:.18s;box-shadow:0 4px 16px rgba(10,92,62,.28);margin-top:6px}
+.btn-submit:hover{transform:translateY(-2px)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-exam{width:100%;padding:15px;background:linear-gradient(135deg,#1255a0,#1a6abf);color:#fff;border:none;border-radius:13px;font-family:'Tajawal',sans-serif;font-size:1.05rem;font-weight:900;cursor:pointer;box-shadow:0 4px 18px rgba(18,85,160,.35);margin-top:14px;animation:pulse 2s ease-in-out infinite;letter-spacing:.3px}
+.privacy{text-align:center;font-size:.72rem;color:var(--muted);margin-top:12px;line-height:1.5}
+#state-loading,#state-notfound,#state-already,#state-success{display:none;text-align:center;padding:10px 0}
+#state-loading{display:block}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--g1);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+.spinner-sm{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--g1);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+.state-icon{font-size:4rem;margin-bottom:12px;display:block;animation:popIn .5s cubic-bezier(.22,.68,0,1.3)}
+.state-title{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.state-sub{font-size:.85rem;color:var(--muted);line-height:1.6}
+.step-row{display:flex;align-items:center;gap:10px;margin-top:10px;text-align:right}
+.step-num{width:24px;height:24px;border-radius:50%;background:#d1d5db;color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-num.done{background:#059669}
+.step-num.active{background:#f59e0b;animation:blink 1.4s infinite}
+.step-txt{font-size:.8rem;color:var(--text)}
+.step-txt.muted{color:var(--muted)}
+.info-box{border-radius:14px;padding:16px;margin-top:16px;text-align:center}
+.info-box.yellow{background:#fffbeb;border:1.5px solid #f5c842}
+.info-box.green{background:var(--g4);border:1.5px solid var(--g3)}
+.info-box.blue{background:var(--blue2);border:1.5px solid var(--blue)}
+.info-box h3{font-size:.92rem;font-weight:900;margin-bottom:5px}
+.info-box p{font-size:.78rem;line-height:1.6}
+</style>
+</head>
+<body>
+<nav>
+<img src="https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png" alt="ACES" onerror="this.style.display='none'">
+<h1>ACES — نظام إدارة الورش التدريبية</h1>
+</nav>
+<div class="wrap"><div class="card">
+<div id="state-loading"><div class="spinner"></div><p style="color:var(--muted);font-size:.88rem">جاري جلب البيانات...</p></div>
+<div id="state-notfound">
+<span class="state-icon">❌</span>
+<div class="state-title" style="color:var(--red)">رمز QR غير صالح</div>
+<div class="state-sub">لم يتم العثور على بيانات. تواصل مع المدرب.</div>
+</div>
+<div id="state-already">
+<span class="state-icon" id="already-icon">⏳</span>
+<div class="state-title" id="already-title">جاري التحقق...</div>
+<div class="state-sub" id="already-msg"></div>
+<div id="already-extra"></div>
+</div>
+<div id="state-form" style="display:none">
+<div class="trainee-banner">
+<div class="t-avatar" id="t-avatar">👤</div>
+<div class="t-info">
+<h3 id="t-name">—</h3>
+<p id="t-dept">—</p>
+<span class="t-day" id="t-day">اليوم 1</span>
+</div>
+</div>
+<div class="sec-title">أدخل بيانات التواصل</div>
+<div class="form-g">
+<label class="inp-label">📱 رقم الهاتف <span class="req">*</span></label>
+<div class="inp-wrap"><span class="inp-icon">📱</span><input class="inp" id="inp-phone" type="tel" placeholder="05XXXXXXXX" maxlength="15" autocomplete="tel"></div>
+<div class="hint">سيُستخدم للتواصل الرسمي</div>
+<div class="err-msg" id="err-phone">يرجى إدخال رقم هاتف صحيح</div>
+</div>
+<div class="form-g">
+<label class="inp-label">📧 البريد الإلكتروني <span class="req">*</span></label>
+<div class="inp-wrap"><span class="inp-icon">✉️</span><input class="inp" id="inp-email" type="email" placeholder="example@domain.com" autocomplete="email"></div>
+<div class="hint">ستصلك المواد التعليمية والشهادة</div>
+<div class="err-msg" id="err-email">يرجى إدخال بريد إلكتروني صحيح</div>
+</div>
+<button class="btn-submit" id="btn-submit" onclick="submitAttendance()">✅ تسجيل الحضور</button>
+<p class="privacy">🔒 بياناتك محمية وتُستخدم فقط لأغراض الورشة</p>
+</div>
+<div id="state-success">
+<span class="state-icon">🎉</span>
+<div class="state-title" style="color:var(--g1)">تم إرسال طلبك!</div>
+<div class="state-sub">لا تغلق الصفحة — ستُنقَل للاختبار تلقائياً.</div>
+<div style="margin:18px 0 0">
+<div class="step-row"><div class="step-num done" id="s1">✓</div><div class="step-txt">تم إرسال طلب الحضور ✅</div></div>
+<div class="step-row"><div class="step-num active" id="s2">2</div><div class="step-txt" id="s2t">في انتظار موافقة المدرب...</div></div>
+<div class="step-row"><div class="step-num" id="s3">3</div><div class="step-txt muted" id="s3t">فتح الاختبار من المدرب</div></div>
+<div class="step-row"><div class="step-num" id="s4">4</div><div class="step-txt muted" id="s4t">الانتقال للاختبار</div></div>
+</div>
+<div id="success-status" style="margin-top:14px;font-size:.78rem;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:7px">
+<div class="spinner-sm"></div> مراقبة مستمرة — لا تغلق الصفحة
+</div>
+<div id="box-approved" class="info-box green" style="display:none">
+<h3 style="color:var(--g1)">✅ تم قبول حضورك!</h3>
+<p style="color:var(--muted);margin-bottom:10px" id="approved-msg">في انتظار فتح الاختبار من المدرب</p>
+<div id="mat-viewer-wrap" style="display:none;margin:12px 0;border-radius:12px;overflow:hidden;border:2px solid var(--g5)">
+<div style="background:var(--g1);color:#fff;padding:8px 14px;font-size:.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center">
+<span>📚 المادة التعليمية للورشة</span>
+<a id="mat-open-link" href="#" target="_blank" style="color:rgba(255,255,255,.85);font-size:.74rem;text-decoration:none">↗ فتح في نافذة جديدة</a>
+</div>
+<iframe id="mat-iframe-scan" style="width:100%;height:420px;border:none;background:#fff" allowfullscreen></iframe>
+</div>
+<div id="mat-no-material" style="display:none;font-size:.78rem;color:var(--muted);text-align:center;padding:10px">📄 لم يتم رفع مادة علمية بعد</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:8px;font-size:.74rem;color:var(--muted)">
+<span class="spinner-sm"></span> في انتظار فتح الاختبار — مراقبة مستمرة
+</div>
+</div>
+<div id="box-exam-open" class="info-box blue" style="display:none">
+<h3 style="color:var(--blue)">📝 الاختبار مفتوح الآن!</h3>
+<p style="color:var(--blue)">جاري الانتقال تلقائياً...</p>
+<button class="btn-exam" onclick="goToExam()">🚀 ابدأ الاختبار الآن</button>
+</div>
+</div>
+</div></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const allStates = ['state-loading','state-notfound','state-already','state-form','state-success'];
+  allStates.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display='none'; });
+  const loadEl = document.getElementById('state-loading');
+  if(loadEl) loadEl.style.display='block';
+  loadFirebase();
+});
+
+async function loadFirebase(){
+  const [{initializeApp},{getDatabase,ref,get,set,update,onValue}] = await Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
+  ]);
+
+  const cfg={apiKey:"AIzaSyDgRH8Slr3uk0RRZOFZ5LDu1WDBWtgtTRY",databaseURL:"https://aces-workshops-default-rtdb.firebaseio.com",projectId:"aces-workshops"};
+  const db=getDatabase(initializeApp(cfg));
+
+  const p=new URLSearchParams(location.search);
+  const wsId=p.get('w')||p.get('wsid');
+  const tid =p.get('t')||p.get('tid');
+
+  // ═══════════════════════════════════════════════════════════════
+  // الإصلاح الرئيسي: مسار الطلب مرتبط باليوم
+  // المسار الجديد: scan_requests/{tid}_day{N}
+  // بدلاً من: scan_requests/{tid}  ← كان يكتب فوق نفسه كل يوم
+  // ═══════════════════════════════════════════════════════════════
+  function reqPath(dayNum){ return 'workshops/'+wsId+'/scan_requests/'+tid+'_day'+dayNum; }
+
+  let day = 1;
+  let _approved=false, _redirecting=false, _unsubReq=null, _unsubExam=null;
+
+  function show(id){
+    ['state-loading','state-notfound','state-already','state-form','state-success']
+      .forEach(s=>{document.getElementById(s).style.display='none';});
+    document.getElementById(id).style.display='block';
+  }
+
+  function validPhone(v){return /^[0-9+\-\s]{7,15}$/.test(v.trim());}
+  function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}
+  function examURL(){return 'https://melnahas11111-ctrl.github.io/ACES-Workshops/trainee.html?wsid='+wsId+'&tid='+tid+'&day='+day;}
+
+  async function loadMaterial(){
+    // ═══════════════════════════════════════════════════════════════
+    // الإصلاح: المادة العلمية تظهر فقط في اليوم الخامس (الأخير)
+    // وبعد أن يُكمل المتدرب تقييم المدرب
+    // في الأيام 1-4: لا تظهر المادة — ينتقل مباشرة للاختبار
+    // ═══════════════════════════════════════════════════════════════
+    const wrap  = document.getElementById('mat-viewer-wrap');
+    const noMat = document.getElementById('mat-no-material');
+    const msgEl = document.getElementById('approved-msg');
+
+    if(day < 5){
+      // أيام 1-4: أخفِ قسم المادة كلياً — انتظار الاختبار فقط
+      if(wrap)  wrap.style.display  = 'none';
+      if(noMat) noMat.style.display = 'none';
+      if(msgEl) msgEl.textContent   = 'في انتظار فتح الاختبار من المدرب';
+      return;
+    }
+
+    // اليوم الخامس: تحقق أن المتدرب أكمل تقييم المدرب أولاً
+    try{
+      const evalSnap = await get(ref(db,'workshops/'+wsId+'/evaluations/'+tid));
+      if(!evalSnap.exists()){
+        // لم يُكمل التقييم بعد — أخفِ المادة وأظهر رسالة
+        if(wrap)  wrap.style.display  = 'none';
+        if(noMat) noMat.style.display = 'none';
+        if(msgEl) msgEl.innerHTML     = 'في انتظار فتح الاختبار من المدرب<br><span style="font-size:.74rem;color:var(--muted)">📌 المادة العلمية ستظهر بعد إكمال تقييم المدرب</span>';
+        return;
+      }
+
+      // أكمل التقييم — أظهر المادة
+      const matSnap = await get(ref(db,'workshops/'+wsId+'/materials'));
+      if(!matSnap.exists()){ showNoMat(); return; }
+      const mats = matSnap.val();
+      const url = mats.singleUrl || mats[5]?.url || mats[1]?.url || '';
+      if(!url){ showNoMat(); return; }
+      const fileId = (url.match(/\/d\/([a-zA-Z0-9_-]+)/) || [])[1];
+      if(!fileId){ showNoMat(); return; }
+      const previewUrl = 'https://drive.google.com/file/d/'+fileId+'/preview';
+      const viewUrl   = 'https://drive.google.com/file/d/'+fileId+'/view';
+      const iframe = document.getElementById('mat-iframe-scan');
+      const link   = document.getElementById('mat-open-link');
+      if(iframe) iframe.src = previewUrl;
+      if(link)   link.href  = viewUrl;
+      if(wrap)   wrap.style.display = 'block';
+      if(noMat)  noMat.style.display = 'none';
+      if(msgEl)  msgEl.textContent = '📚 المادة العلمية متاحة — في انتظار فتح الاختبار';
+    }catch(e){ showNoMat(); }
+  }
+
+  function showNoMat(){
+    const noMat = document.getElementById('mat-no-material');
+    const wrap  = document.getElementById('mat-viewer-wrap');
+    if(noMat) noMat.style.display = 'block';
+    if(wrap)  wrap.style.display  = 'none';
+  }
+
+  window.goToExam = function(){
+    if(_redirecting) return;
+    _redirecting = true;
+    try{if(_unsubReq)_unsubReq();}catch(e){}
+    try{if(_unsubExam)_unsubExam();}catch(e){}
+    location.href = examURL();
+  };
+
+  function step(n, state){
+    const el = document.getElementById('s'+n);
+    const tx = document.getElementById('s'+n+'t');
+    if(!el) return;
+    el.className = 'step-num';
+    if(state==='done'){  el.classList.add('done');   el.textContent='✓'; if(tx) tx.classList.remove('muted'); }
+    else if(state==='active'){ el.classList.add('active'); el.textContent=n; if(tx) tx.classList.remove('muted'); }
+    else { el.textContent=n; if(tx) tx.classList.add('muted'); }
+  }
+
+  function listenExam(){
+    _unsubExam = onValue(ref(db,'workshops/'+wsId+'/exam_approvals/'+day), snap=>{
+      const v = snap.exists() ? snap.val() : null;
+      if(v==='open' && !_redirecting){
+        step(3,'done'); step(4,'active');
+        document.getElementById('s3t').textContent = 'الاختبار مفتوح ✅';
+        document.getElementById('s4t').textContent = 'جاري الانتقال...';
+        document.getElementById('box-approved').style.display  = 'none';
+        document.getElementById('box-exam-open').style.display = 'block';
+        document.getElementById('success-status').style.display = 'none';
+        setTimeout(()=>{ if(!_redirecting) window.goToExam(); }, 2000);
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // الإصلاح: الاستماع على المسار الجديد الخاص باليوم
+  // ═══════════════════════════════════════════════════════════════
+  function listenRequest(){
+    _unsubReq = onValue(ref(db, reqPath(day)+'/status'), snap=>{
+      const v = snap.exists() ? snap.val() : null;
+      if(v==='approved' && !_approved){
+        _approved = true;
+        step(2,'done'); step(3,'active');
+        document.getElementById('s2t').textContent = 'تم قبول حضورك ✅';
+        document.getElementById('s3t').textContent = 'في انتظار فتح الاختبار...';
+        document.getElementById('success-status').style.display = 'none';
+        document.getElementById('box-approved').style.display   = 'block';
+        loadMaterial();
+        listenExam();
+      }
+      if(v==='rejected'){
+        try{if(_unsubReq)_unsubReq();}catch(e){}
+        document.getElementById('success-status').innerHTML =
+          '<span style="color:var(--red)">❌ تم رفض طلبك — تواصل مع المدرب</span>';
+      }
+    });
+  }
+
+  async function init(){
+    if(!wsId || !tid){ show('state-notfound'); return; }
+    try{
+      const [traineeSnap, resultsSnap, approvalsSnap, wsNameSnap] = await Promise.all([
+        get(ref(db,'workshops/'+wsId+'/trainees/'+tid)),
+        get(ref(db,'workshops/'+wsId+'/results/'+tid)),
+        get(ref(db,'workshops/'+wsId+'/exam_approvals')),
+        get(ref(db,'workshops/'+wsId+'/name'))
+      ]);
+
+      const trainee   = traineeSnap.exists()   ? traineeSnap.val()   : null;
+      if(!trainee){ show('state-notfound'); return; }
+
+      const results   = resultsSnap.exists()   ? resultsSnap.val()   : {};
+      const approvals = approvalsSnap.exists() ? approvalsSnap.val() : {};
+      const wsName    = wsNameSnap.exists()    ? wsNameSnap.val()    : '';
+
+      // ── حساب اليوم التالي: أول يوم بدون نتيجة ──
+      const DAYS   = [1,2,3,4,5];
+      const nextDay = DAYS.find(d => !results[d] || results[d].absent) || null;
+
+      if(!nextDay){
+        show('state-already');
+        document.getElementById('already-icon').textContent  = '🎓';
+        document.getElementById('already-title').textContent = 'أتممت جميع أيام الورشة!';
+        document.getElementById('already-msg').textContent   = 'تهانينا — لقد أكملت اختبارات الأيام الخمسة بنجاح.';
+        document.getElementById('already-extra').innerHTML   = '';
+        return;
+      }
+
+      day = nextDay;
+      const examStatus = approvals[day];
+
+      // ═══════════════════════════════════════════════════════════
+      // الإصلاح: قراءة طلب اليوم الحالي من المسار الجديد
+      // ═══════════════════════════════════════════════════════════
+      const reqSnap = await get(ref(db, reqPath(day)));
+      const req     = reqSnap.exists() ? reqSnap.val() : null;
+
+      if(req){
+        if(req.status === 'approved' && examStatus === 'open'){
+          window.goToExam(); return;
+        }
+        if(req.status === 'approved'){
+          showWaitingApproved(wsName);
+          _unsubExam = onValue(ref(db,'workshops/'+wsId+'/exam_approvals/'+day), snap=>{
+            if(snap.val()==='open' && !_redirecting) window.goToExam();
+          });
+          return;
+        }
+        if(req.status === 'pending'){
+          showWaitingPending(wsName);
+          listenRequest();
+          return;
+        }
+        // مرفوض → نعيد عرض النموذج
+      }
+
+      // ── عرض نموذج التسجيل ليوم nextDay ──
+      if(trainee.phone) document.getElementById('inp-phone').value = trainee.phone;
+      if(trainee.email) document.getElementById('inp-email').value = trainee.email;
+
+      const ini = (trainee.name||'م').split(' ').map(n=>n[0]||'').join('').slice(0,2).toUpperCase();
+      document.getElementById('t-avatar').textContent = ini || '👤';
+      document.getElementById('t-name').textContent   = trainee.name || '—';
+      document.getElementById('t-dept').textContent   = trainee.dept || '';
+      document.getElementById('t-day').textContent    = 'اليوم '+day+' — '+wsName;
+      document.title = 'ACES — اليوم '+day+' — '+wsName;
+
+      show('state-form');
+
+    }catch(e){ console.error('init error:',e); show('state-notfound'); }
+  }
+
+  function showWaitingApproved(wsName){
+    show('state-already');
+    document.getElementById('already-icon').textContent  = '✅';
+    document.getElementById('already-title').textContent = 'تم قبول حضورك — اليوم '+day;
+    document.getElementById('already-msg').textContent   = 'في انتظار فتح الاختبار من المدرب.';
+    document.getElementById('already-extra').innerHTML   =
+      '<div class="info-box green" style="margin-top:14px">'+
+      '<h3 style="color:var(--g1)">✅ حضورك مسجّل — اليوم '+day+'</h3>'+
+      '<p style="color:var(--muted)">في انتظار فتح الاختبار'+
+      '<br><span style="display:inline-flex;align-items:center;gap:5px;margin-top:6px">'+
+      '<span class="spinner-sm"></span> مراقبة مستمرة — لا تغلق الصفحة</span></p></div>';
+  }
+
+  function showWaitingPending(wsName){
+    show('state-already');
+    document.getElementById('already-icon').textContent  = '⏳';
+    document.getElementById('already-title').textContent = 'طلبك قيد المراجعة — اليوم '+day;
+    document.getElementById('already-msg').textContent   = 'في انتظار موافقة المدرب — ستُنقَل للاختبار تلقائياً.';
+    document.getElementById('already-extra').innerHTML   =
+      '<div style="margin-top:12px;font-size:.78rem;color:var(--muted);'+
+      'display:flex;align-items:center;justify-content:center;gap:7px">'+
+      '<div class="spinner-sm"></div> مراقبة مستمرة — لا تغلق الصفحة</div>';
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // الإصلاح: الكتابة في المسار الجديد الخاص باليوم
+  // ═══════════════════════════════════════════════════════════════
+  window.submitAttendance = async function(){
+    const phone = document.getElementById('inp-phone').value.trim();
+    const email = document.getElementById('inp-email').value.trim();
+    let ok = true;
+
+    if(!validPhone(phone)){
+      document.getElementById('inp-phone').classList.add('err');
+      document.getElementById('err-phone').classList.add('show');
+      ok = false;
+    } else {
+      document.getElementById('inp-phone').classList.remove('err');
+      document.getElementById('err-phone').classList.remove('show');
+    }
+    if(!validEmail(email)){
+      document.getElementById('inp-email').classList.add('err');
+      document.getElementById('err-email').classList.add('show');
+      ok = false;
+    } else {
+      document.getElementById('inp-email').classList.remove('err');
+      document.getElementById('err-email').classList.remove('show');
+    }
+    if(!ok) return;
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري الإرسال...';
+
+    try{
+      const trainee = ((await get(ref(db,'workshops/'+wsId+'/trainees/'+tid))).val()) || {};
+
+      // ── كتابة الطلب في المسار الجديد: scan_requests/{tid}_day{N} ──
+      await set(ref(db, reqPath(day)), {
+        tid,
+        name:      trainee.name || '—',
+        dept:      trainee.dept || '—',
+        sid:       trainee.sid  || '—',
+        phone,
+        email,
+        dayId:     day,
+        status:    'pending',
+        scannedAt: new Date().toISOString()
+      });
+
+      // تحديث بيانات التواصل في ملف المتدرب
+      await update(ref(db,'workshops/'+wsId+'/trainees/'+tid), {phone, email});
+
+      show('state-success');
+      listenRequest();
+
+    }catch(e){
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = '✅ تسجيل الحضور';
+      alert('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+    }
+  };
+
+  ['inp-phone','inp-email'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', ()=>{
+      const fn = id==='inp-phone' ? validPhone : validEmail;
+      if(fn(el.value)){
+        el.classList.remove('err');
+        document.getElementById('err-'+id.split('-')[1]).classList.remove('show');
+      }
+    });
+    el.addEventListener('keypress', e=>{ if(e.key==='Enter') window.submitAttendance(); });
+  });
+
+  init();
+} // end loadFirebase
+</script>
+</body>
+</html>
