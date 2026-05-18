@@ -20,7 +20,8 @@
 
   // ─── CONFIG ────────────────────────────────────────────
   // غيّر هذا الرابط إذا رفعت scan.html في مسار مختلف
-  const SCAN_PAGE_URL = 'https://melnahas11111-ctrl.github.io/ACES-Workshops/scan.html';
+const SCAN_PAGE_URL = 'https://wg1478645-eng.github.io/kahramaa/scan.html';
+';
 
   // ─── HELPERS ───────────────────────────────────────────
   function getWorkshopData() {
