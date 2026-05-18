@@ -203,7 +203,7 @@ window._fb2Ready = true;
 <!-- NAV -->
 <nav>
   <div style="display:flex;align-items:center;gap:10px">
-    <img src="https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png" style="height:42px;width:auto;object-fit:contain" alt="ACES">
+  <img src="https://wg1478645-eng.github.io/kahramaa/aces_logo.png" style="height:42px;width:auto;object-fit:contain" alt="ACES">
     <div>
       <div style="font-size:.78rem;font-weight:900;color:var(--g1)">نظام إدارة الورش التدريبية</div>
       <div style="font-size:.64rem;color:var(--muted)">سحب العينات الغذائية — 5 أيام</div>
@@ -222,7 +222,7 @@ window._fb2Ready = true;
   <div class="login-wrap">
     <div class="login-card">
       <div style="background:var(--g4);border-radius:14px;padding:8px 22px;display:inline-block;margin-bottom:16px;border:1.5px solid var(--border)">
-        <div style=""><img src="https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png" style="height:40px;width:auto" alt="ACES"></div>
+        <img src="https://raw.githubusercontent.com/wg1478645-eng/kahramaa/main/aces_logo.png" style="height:42px;width:auto;object-fit:contain" alt="ACES">
       </div>
       <h2 style="font-weight:900;color:var(--g1);margin-bottom:4px">تسجيل الدخول</h2>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:22px">اختر نوع حسابك</p>
@@ -3249,7 +3249,7 @@ function _drawCert(t,w,i){
         qBox.innerHTML='';
         try{
           new window.QRCode(qBox,{
-            text:location.origin+location.pathname.replace(/index\.html$/,'').replace(/\/[^/]*$/,'/')+'verify.html?vc='+encodeURIComponent(cid),
+            text:'https://wg1478645-eng.github.io/kahramaa/verify.html?vc='+encodeURIComponent(cid),
             width:66,height:66,
             colorDark:'#6b1c24',colorLight:'#ffffff',
             correctLevel:window.QRCode.CorrectLevel.H
