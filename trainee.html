@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -213,7 +214,16 @@ nav img{height:36px;object-fit:contain}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
  
-const cfg = {apiKey:"AIzaSyDgRH8Slr3uk0RRZOFZ5LDu1WDBWtgtTRY",databaseURL:"https://aces-workshops-default-rtdb.firebaseio.com",projectId:"aces-workshops"};
+const cfg = {
+  apiKey: "AIzaSyCKmVEEC-MBwRj7oYHAWL-aVLHx5CKaSAc",
+  authDomain: "kahramaa-a7443.firebaseapp.com",
+  databaseURL: "https://kahramaa-a7443-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kahramaa-a7443",
+  storageBucket: "kahramaa-a7443.firebasestorage.app",
+  messagingSenderId: "318396481841",
+  appId: "1:318396481841:web:6a9edb2b6c13592552b010",
+  measurementId: "G-BBXGHSLW0R"
+};
 const db  = getDatabase(initializeApp(cfg));
  
 window.QUIZ_DATA = {
@@ -701,3 +711,4 @@ init().catch(e=>{ console.error(e); show('notfound'); });
 </script>
 </body>
 </html>
+How to Access Uploaded HTML File Content? - Manus
