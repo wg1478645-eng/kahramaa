@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ACES — اختبار المتدرب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{--g1:#0a5c3e;--g2:#0e7a54;--g4:#eaf6f1;--g5:#c8e8d8;--red:#b83030;--bg:#f5f9f7;--card:#fff;--text:#0e1f18;--muted:#4a7060;--border:#b8d8cc}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.spinner{width:36px;height:36px;border:3px solid var(--g5);border-top-color:var(--g1);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+.card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:14px}
+.btn{padding:11px 22px;border-radius:10px;border:none;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer}
+.btn-p{background:var(--g1);color:#fff}
+.btn-p:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-s{background:var(--g4);color:var(--g1);border:1.5px solid var(--g5)}
+.screen{display:none;padding:16px;max-width:680px;margin:0 auto;animation:fadeUp .4s}
+.screen.active{display:block}
+.opt-btn{width:100%;text-align:right;padding:12px 16px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:8px;transition:all .2s;color:var(--text)}
+.opt-btn:hover:not(:disabled){border-color:var(--g1);background:var(--g4)}
+.prog-bar{height:7px;background:#e5e7eb;border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:10px;transition:width .4s}
+nav{background:var(--card);border-bottom:2px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+nav img{height:36px;object-fit:contain}
+ 
+/* ── Bottom tabs (last day only) ── */
+#bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;
+  border-top:2px solid var(--border);grid-template-columns:1fr 1fr;box-shadow:0 -4px 18px rgba(0,0,0,.1)}
+.tab-btn{padding:10px 4px 8px;border:none;background:none;font-family:'Tajawal',sans-serif;
+  font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:3px;border-top:3px solid transparent;color:var(--muted)}
+.tab-btn.active{color:var(--g1);border-top-color:var(--g1)}
+.tab-panel{display:none;padding:16px;max-width:680px;margin:0 auto;padding-bottom:90px}
+.tab-panel.active{display:block}
+</style>
+</head>
+<body>
+ 
+<nav>
+  <img src="https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png" alt="ACES">
+  <div>
+    <div style="font-size:.82rem;font-weight:900;color:var(--g1)">ACES Academy — اختبار المتدرب</div>
+    <div style="font-size:.68rem;color:var(--muted)" id="nav-sub">جاري التحميل...</div>
+  </div>
+</nav>
+ 
+<!-- ════ SCREENS ════ -->
+<div id="s-loading" class="screen active">
+  <div style="text-align:center;padding:60px 20px">
+    <div class="spinner"></div>
+    <p style="margin-top:16px;color:var(--muted);font-size:.9rem">جاري التحقق...</p>
+  </div>
+</div>
+ 
+<div id="s-notfound" class="screen">
+  <div class="card" style="text-align:center;padding:40px">
+    <div style="font-size:3rem;margin-bottom:12px">📱</div>
+    <h2 style="color:var(--g1);margin-bottom:8px;font-size:1rem">امسح كيو آر اليوم</h2>
+    <p style="color:var(--muted);font-size:.88rem">لم يتم تسجيل حضورك لهذا اليوم بعد</p>
+    <div id="notfound-day" style="margin-top:14px;background:var(--g4);border-radius:10px;padding:10px;font-weight:700;color:var(--g1);font-size:.85rem"></div>
+  </div>
+</div>
+ 
+<div id="s-rejected" class="screen">
+  <div class="card" style="text-align:center;padding:40px">
+    <div style="font-size:2.5rem;margin-bottom:12px">🚫</div>
+    <h2 style="color:var(--red);margin-bottom:8px">تم رفض طلبك</h2>
+    <p style="color:var(--muted);font-size:.88rem">تواصل مع المدرب</p>
+  </div>
+</div>
+ 
+<div id="s-waiting" class="screen">
+  <div class="card" style="text-align:center;padding:40px">
+    <div style="font-size:3rem;margin-bottom:12px;animation:pulse 2s infinite">⏳</div>
+    <h2 style="color:var(--g1);margin-bottom:8px;font-size:1rem">في انتظار موافقة المدرب</h2>
+    <p style="color:var(--muted);font-size:.88rem">لا تغلق الصفحة</p>
+    <div id="wait-name" style="font-weight:900;font-size:1rem;color:var(--text);margin-top:14px"></div>
+  </div>
+</div>
+ 
+<div id="s-waitexam" class="screen">
+  <div class="card" style="text-align:center;padding:24px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff">
+    <div style="font-size:2rem;margin-bottom:8px">✅</div>
+    <div style="font-weight:900;font-size:1rem;margin-bottom:4px">تم قبول حضورك</div>
+    <div id="waitexam-name" style="font-size:.82rem;opacity:.85;margin-bottom:10px"></div>
+    <div style="display:inline-flex;align-items:center;gap:7px;font-size:.78rem;background:rgba(255,255,255,.15);border-radius:20px;padding:6px 14px">
+      <span style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block"></span>
+      في انتظار فتح الاختبار...
+    </div>
+  </div>
+  <div id="exam-ready-box" style="display:none">
+    <div class="card" style="text-align:center;background:linear-gradient(135deg,#065f46,var(--g1));color:#fff;padding:24px">
+      <div style="font-size:1.8rem;margin-bottom:8px">🎯</div>
+      <div style="font-weight:900;font-size:1rem;margin-bottom:14px">الاختبار مفتوح الآن!</div>
+      <button class="btn btn-p" onclick="startQuiz()" style="background:#fff;color:var(--g1);font-size:.95rem;padding:12px 32px;border-radius:12px">
+        🚀 ابدأ الاختبار الآن
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<div id="s-quiz" class="screen">
+  <div class="card" style="padding:14px 18px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <div>
+        <div id="quiz-day-title" style="font-weight:900;font-size:.92rem;color:var(--g1)"></div>
+        <div id="quiz-trainee" style="font-size:.75rem;color:var(--muted)"></div>
+      </div>
+      <div id="timer-display" style="font-size:1.1rem;font-weight:900;color:var(--g1)"></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="quiz-prog" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:4px">
+      <span id="quiz-prog-text">السؤال 0 من 0</span>
+      <span id="quiz-answered-text">أجبت: 0</span>
+    </div>
+  </div>
+  <div id="q-nav" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px"></div>
+  <div id="q-area"></div>
+  <div style="display:flex;gap:10px;margin-top:4px">
+    <button class="btn btn-s" id="btn-prev" onclick="navigate(-1)" style="flex:1">→ السابق</button>
+    <button class="btn btn-s" id="btn-next" onclick="navigate(1)" style="flex:1">التالي ←</button>
+  </div>
+  <button class="btn btn-p" id="btn-submit" onclick="confirmSubmit()" style="width:100%;margin-top:10px;display:none">✅ تسليم الاختبار</button>
+</div>
+ 
+<div id="s-done" class="screen">
+  <div class="card" style="text-align:center;padding:40px">
+    <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+    <div id="done-score" style="font-size:2.5rem;font-weight:900;margin:10px 0"></div>
+    <div id="done-details"></div>
+  </div>
+</div>
+ 
+<!-- ════ LAST DAY TABS ════ -->
+<div id="bottom-tabs" style="display:none">
+  <button class="tab-btn active" id="btn-tab-eval" onclick="showTab('eval')">
+    <span style="font-size:1.3rem">⭐</span>تقييم المدرب
+  </button>
+  <button class="tab-btn" id="btn-tab-material" style="display:none" onclick="showTab('material')">
+    <span style="font-size:1.3rem">📚</span>المادة العلمية
+  </button>
+</div>
+ 
+<div class="tab-panel" id="tab-eval" style="display:none">
+  <div class="card">
+    <div style="font-weight:900;font-size:.95rem;color:var(--g1);margin-bottom:4px">⭐ تقييم المدرب</div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:18px">قيّم المدرب للحصول على المادة العلمية</div>
+    <div id="eval-done-msg" style="display:none;text-align:center;padding:20px">
+      <div style="font-size:2rem;margin-bottom:8px">✅</div>
+      <div style="font-weight:700;color:var(--g1)">شكراً! تم تسجيل تقييمك</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-top:6px">اضغط على المادة العلمية ←</div>
+    </div>
+    <div id="eval-form">
+      <div id="eval-criteria"></div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px">تعليق (اختياري)</div>
+        <textarea id="eval-comment" rows="3" placeholder="أضف تعليقك هنا..."
+          style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:10px;
+          font-family:'Tajawal',sans-serif;font-size:.85rem;resize:vertical;outline:none"></textarea>
+      </div>
+      <button onclick="submitEval()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;
+        border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer">
+        إرسال التقييم ⭐
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<div class="tab-panel" id="tab-material" style="display:none">
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:900;font-size:.92rem;color:#fff">📚 المادة التعليمية</div>
+        <div style="font-size:.74rem;color:rgba(255,255,255,.8);margin-top:2px">تصفح وحمّل المادة</div>
+      </div>
+      <a id="mat-dl-link" href="#" target="_blank"
+        style="display:none;font-size:.82rem;color:var(--g1);font-weight:800;text-decoration:none;
+        background:#fff;border-radius:9px;padding:8px 16px">⬇️ تحميل</a>
+    </div>
+    <div id="mat-loading" style="text-align:center;padding:40px;color:var(--muted)">
+      <div class="spinner"></div>
+      <p style="margin-top:12px;font-size:.82rem">جاري تحميل المادة...</p>
+    </div>
+    <div id="mat-none" style="display:none;text-align:center;padding:40px;color:var(--muted)">
+      <div style="font-size:2.5rem;margin-bottom:10px">📄</div>
+      <p style="font-size:.85rem">لم يتم رفع المادة بعد</p>
+    </div>
+    <div id="mat-embed" style="display:none">
+      <iframe id="mat-iframe" style="width:100%;height:calc(100vh - 180px);min-height:400px;border:none" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+ 
+<!-- Submit confirm modal -->
+<div id="submit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:18px;padding:28px;max-width:340px;width:90%;text-align:center">
+    <div style="font-size:2rem;margin-bottom:10px">⚠️</div>
+    <h3 style="margin-bottom:8px">تأكيد التسليم</h3>
+    <p id="modal-msg" style="font-size:.85rem;color:var(--muted);margin-bottom:18px"></p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-s" style="flex:1" onclick="document.getElementById('submit-modal').style.display='none'">إلغاء</button>
+      <button class="btn btn-p" style="flex:1" onclick="submitQuiz()">تسليم</button>
+    </div>
+  </div>
+</div>
+ 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+ 
+const cfg = {apiKey:"AIzaSyDgRH8Slr3uk0RRZOFZ5LDu1WDBWtgtTRY",databaseURL:"https://aces-workshops-default-rtdb.firebaseio.com",projectId:"aces-workshops"};
+const db  = getDatabase(initializeApp(cfg));
+ 
+window.QUIZ_DATA = {
+  1: {
+    title: 'اختبار اليوم الأول — ISO 2859-1 وأساسيات سحب العينات',
+    questions: [
+      {type:'tf',q:'وفقاً لمعيار ISO 2859-1، عند استخدام مستوى الفحص العادي (Level II) ورمز الحجم N مع AQL = 1.0، يكون عدد العينة 80 وحدة وحد القبول Ac = 2.',opts:['صح','خطأ'],ans:0,exp:'صح. وفقاً لجداول ISO 2859-1، هذه الأرقام صحيحة للفحص العادي.'},
+      {type:'tf',q:'في نظام ISO 2859-1، تنتقل الدفعة من الفحص العادي إلى الفحص المشدد (Tightened) عند رفض دفعتين أو أكثر من أصل 5 دفعات متتالية.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو الشرط المحدد في ISO 2859-1 للانتقال للفحص المشدد.'},
+      {type:'tf',q:'حد الجودة الحدية (LTPD أو RQL) هو مستوى الجودة الذي يُحدد الحد الأدنى المقبول من وجهة نظر المنتج.',opts:['صح','خطأ'],ans:1,exp:'خطأ. LTPD/RQL هو من وجهة نظر المستهلك وليس المنتج.'},
+      {type:'tf',q:'في منطقة الرفض الإحصائي، يكون احتمال رفض الدفعة الجيدة (خطأ النوع الأول α) أعلى من احتمال قبول الدفعة الرديئة (خطأ النوع الثاني β).',opts:['صح','خطأ'],ans:1,exp:'خطأ. لا يمكن الجزم بذلك — يعتمد على الخطة المحددة.'},
+      {type:'tf',q:'العينة العشوائية الطبقية (Stratified Random Sampling) تُقسّم الدفعة إلى طبقات متجانسة وتُسحب منها عينات بنسب متساوية أو متناسبة.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو التعريف الدقيق للعينة الطبقية.'},
+      {type:'tf',q:'في خطة العينة المزدوجة (Double Sampling)، إذا كان عدد العيوب بين Ac1 و Re1 يُتخذ قرار الرفض فوراً.',opts:['صح','خطأ'],ans:1,exp:'خطأ. في هذه الحالة تُسحب عينة ثانية.'},
+      {type:'tf',q:'وفقاً للائحة GSO 1016، تُصنَّف بكتيريا Clostridium botulinum في المعلبات ضمن الفئة الخطرة التي تستوجب الإجراء الفوري.',opts:['صح','خطأ'],ans:0,exp:'صح. هذه البكتيريا خطرة جداً وتستوجب إجراء فورياً.'},
+      {type:'tf',q:'تشير منحنيات OC Curves إلى أنه كلما زاد حجم العينة، كلما انحدر المنحنى بشكل أحد وأصبحت الخطة أكثر تمييزاً.',opts:['صح','خطأ'],ans:0,exp:'صح. زيادة حجم العينة تزيد من قدرة التمييز.'},
+      {type:'tf',q:'الانتقال من الفحص المشدد إلى إيقاف الفحص (Discontinuation) في ISO 2859-1 يحدث عند رفض 10 دفعات.',opts:['صح','خطأ'],ans:1,exp:'خطأ. الإيقاف يحدث عند رفض 5 دفعات وليس 10.'},
+      {type:'tf',q:'محرك درجة التبديل (Switching Score) يبدأ من 0 ويزيد بمقدار 3 عند كل قبول نظيف.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو التعريف الصحيح لمحرك التبديل.'},
+      {type:'tf',q:'الفرق بين عدم القبول (Rejection) وعدم الامتثال (Non-conformance) أن الأول قرار إداري والثاني وصف تقني.',opts:['صح','خطأ'],ans:0,exp:'صح. الرفض إداري والعيب وصف تقني.'},
+      {type:'tf',q:'في نموذج العينات المخبرية، تمثّل وحدة العينة الجزء الذي يُرسَل للمختبر وقد تختلف عن وحدة الدفعة.',opts:['صح','خطأ'],ans:0,exp:'صح. وحدة العينة قد تختلف عن وحدة الدفعة.'},
+      {type:'tf',q:'نظام الأمان الإحصائي يتطلب مراجعة خطط أخذ العينات سنوياً فقط.',opts:['صح','خطأ'],ans:1,exp:'خطأ. المراجعة تُجرى عند أي تغيير جوهري كتغيير المورد.'},
+      {type:'mc',q:'دفعة 3500 وحدة، Level II، AQL=0.65%. وُجد 3 وحدات معيبة. ما القرار؟',opts:['قبول — 3 = Ac وفق الجدول','رفض — تجاوز Ac','سحب عينة ثانية','إعادة الفحص'],ans:0,exp:'وفق ISO 2859-1، رمز L مع AQL 0.65% يعطي Ac=3، فعدد العيوب = Ac ← قبول.'},
+      {type:'mc',q:'خطة مزدوجة: n1=80، d1=3، Ac1=1، Re1=4. ما الإجراء التالي؟',opts:['رفض فوري','قبول فوري','سحب عينة ثانية n2=80','إعادة فحص بخطة مفردة'],ans:2,exp:'d1=3 بين Ac1 وRe1 ← منطقة رمادية ← سحب عينة ثانية.'},
+      {type:'mc',q:'عينات متعددة: أعداد تراكمية 1،2،4،5. Re التراكمية=5، Ac=3. القرار؟',opts:['قبول','رفض — العدد = Re','سحب خامسة','إيقاف الفحص'],ans:1,exp:'العدد التراكمي = Re ← رفض فوري.'},
+      {type:'mc',q:'ما المدخل الأساسي الذي يحدد حجم العينة n قبل الوصول للموقع؟',opts:['نوع المنتج فقط','N + IL + AQL معاً','خبرة المفتش','ساعات العمل المتاحة'],ans:1,exp:'ثلاثة مدخلات: N + مستوى الفحص + AQL.'},
+      {type:'mc',q:'فحص زيوت سائبة 50,000 لتر. أي بروتوكول سحب صحيح؟',opts:['عينة واحدة من الأعلى','من الثلث العلوي والأوسط والسفلي مع Flushing','من مخرج الصرف السفلي','فحص الشهادات فقط'],ans:1,exp:'السحب من المستويات الثلاثة مع التحريك والـ Flushing يضمن التمثيل الصحيح.'},
+      {type:'mc',q:'ما الفرق بين تحضير الحبوب الكبيرة (>25جم) والعينات الصغيرة (<5جم)؟',opts:['لا فرق','الكبيرة تُكسر قبل الطحن، الصغيرة تُستخدم مباشرة','الكبيرة تُغمر في الماء','الصغيرة تحتاج طحناً أدق'],ans:1,exp:'الحبوب الكبيرة تحتاج تكسيراً مسبقاً للحصول على توزيع متجانس.'},
+      {type:'mc',q:'ما الدلالة القانونية لـ"العينة الممثلة الممتثلة"؟',opts:['أي عينة من الدفعة','بروتوكول معتمد + بطاقة رسمية + شروط حفظ','عينة نتائجها مقبولة فقط','عينة وقّع عليها المفتش'],ans:1,exp:'ثلاثة عناصر: بروتوكول + توثيق + حفظ. أي إخلال يُبطل قيمتها القانونية.'},
+      {type:'mc',q:'تقسيم 500جم بالربع (Quartering) للحصول على 25جم. كم مرة؟',opts:['مرة واحدة','مرتان','ثلاث مرات','لا يُستخدم للمساحيق'],ans:2,exp:'500←250←125←62.5، ثم تُؤخذ 25جم.'},
+      {type:'mc',q:'بسترة 71°C/14 ثانية بدلاً من 72°C/15 ثانية. التصنيف والإجراء؟',opts:['مخالفة بسيطة','تنبيه كتابي','Critical — إيقاف فوري + سحب عينات','تشديد الفحص فقط'],ans:2,exp:'الانحراف عن معايير البسترة = مخالفة Critical تستوجب إيقاف فورياً.'},
+      {type:'mc',q:'إرسالية 50,000 كيس. الحد الأدنى لنقاط السحب؟',opts:['5 نقاط','7 نقاط','14 نقطة كحد أدنى','20 نقطة'],ans:2,exp:'وفق الجدول القياسي للإرساليات الكبيرة: حد أدنى 14 نقطة.'},
+      {type:'mc',q:'ما الأثر القانوني لسحب عينة بدون بطاقة رسمية؟',opts:['تُقبل مع تحفظ','يحق الطعن وإبطال العينة كدليل','تُخفَّض درجة المخالفة','تُحوَّل للتحكيم'],ans:1,exp:'غياب البطاقة يُتيح الطعن وإبطال العينة قانونياً.'},
+      {type:'mc',q:'الفرق بين العينة المركبة والتمثيلية؟',opts:['لا فرق','المركبة من نقاط متعددة تُمزج، التمثيلية قد تكون من نقطة واحدة','المركبة للكيمياء فقط','التمثيلية أصغر دائماً'],ans:1,exp:'المركبة دائماً متعددة النقاط، التمثيلية قد تكون من نقطة واحدة إذا كانت الدفعة متجانسة.'}
+    ]
+  },
+  2: {
+    title: 'اختبار اليوم الثاني — التفتيش الغذائي وأنواع العينات',
+    questions: [
+      {type:'tf',q:'التفتيش الغذائي هو الجزء الواقعي للسلسلة الغذائية الذي يهدف إلى مراقبة المنشآت والإجراءات والمواصفات الفنية.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'الركيزة الثالثة من الأركان الخمس للتفتيش هي "الحياد والموضوعية" فقط دون اشتراط توثيق أو متابعة.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'النظام المبني على المخاطر يُخصص موارد الفحص بناءً على مستوى الخطورة المحتملة.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'العينة الاحتزازية تُعدّ عينة احتمالية لأن المفتش يختارها بحكمه الشخصي.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'في نموذج العينات المخبرية، تمثّل وحدة العينة الجزء الذي يُرسَل للمختبر وهي أصغر مستويات التسلسل.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'مستوى الجودة المقبول (AQL) هو الحد الأدنى من العيوب الذي يجب أن تحتويه الدفعة كي تُقبل.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'الفحص المشدد يُطبَّق عندما تتحسن الجودة لمكافأة المورد.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'العينة الموسّعة تُجمع من نقاط سحب متعددة وتُمزج لتمثيل التباين الكلي.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'mc',q:'ما الهدف الأساسي من التفتيش في المحور الأول لقائمة التفتيش الميداني؟',opts:['التحقق من الأسعار','مراقبة البيئة والمنشأة ومصادر التلوث','إجراء اختبارات مخبرية فورية','إعداد تقارير إدارية'],ans:1,exp:'المحور الأول يركز على البيئة الحيوية.'},
+      {type:'mc',q:'أي من التالي يُصنَّف مخالفة Critical تستوجب إجراءً فورياً؟',opts:['خلل بسيط في لافتة التسعير','ارتفاع طفيف في حرارة التخزين 1°C','تلوث ميكروبيولوجي بمسببات خطيرة','عدم تطابق لون التغليف'],ans:2,exp:'التلوث بمسببات أمراض خطيرة = Critical.'},
+      {type:'mc',q:'الفرق بين النظام التقليدي والمبني على المخاطر؟',opts:['التقليدي رقمي والمخاطر يدوي','التقليدي يوزع بالتساوي، المخاطر يركّز على الخطورة العالية','لا فرق في النتائج','التقليدي أسرع دائماً'],ans:1,exp:'المخاطر يركّز على النقاط الأعلى خطورة.'},
+      {type:'mc',q:'أيٌّ من التالي عينة احتمالية؟',opts:['الاحتزازية','عينة الملاءمة','العشوائية البسيطة','عدسة المحقق'],ans:2,exp:'العشوائية البسيطة.'},
+      {type:'mc',q:'ما العناصر الثلاثة الأساسية لمنظومة تقييم المخاطر المتكاملة؟',opts:['السعر والكمية والتاريخ','المادة الغذائية والعادة والقدرة الإدارية','نوع المنشأة وعدد العمال والموقع','الموقع والتاريخ والمصنّع'],ans:1,exp:'المادة + العادة + القدرة الإدارية.'},
+      {type:'mc',q:'الفرق بين Variables Sampling وAttributes Sampling؟',opts:['Variables تحتاج عينة أكبر','Variables تقيس كمياً، Attributes تحكم بقبول/رفض','Attributes أدق في كل الحالات','لا فرق إلا في الاسم'],ans:1,exp:'Variables كمي، Attributes قبول/رفض.'},
+      {type:'mc',q:'ما الذي يميّز مطاعم الكاترينج من حيث متطلبات الفحص؟',opts:['لا توجد فروق','تتطلب فحص وجبات تجريبية وعينات حية','المطاعم العادية أشد رقابة','الكاترينج معفى من الفحص المفاجئ'],ans:1,exp:'الكاترينج يخدم أعداداً كبيرة دفعة واحدة.'}
+    ]
+  },
+  3: {
+    title: 'اختبار اليوم الثالث — المخاطر الإحصائية وGSO 1016',
+    questions: [
+      {type:'tf',q:'خطأ النوع الأول (Type I Error) هو خطأ المنتج: احتمال رفض دفعة جيدة.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'خطأ النوع الثاني يُعرَّف بأنه خطأ المنتج أيضاً ويُرمز له بـ α.',opts:['صح','خطأ'],ans:1,exp:'خطأ. النوع الثاني = β = خطأ المستهلك.'},
+      {type:'tf',q:'وفق GSO 1016، يُشترط للحوم الحمراء الطازجة غياب Salmonella تماماً.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'في خطة الفحص الأحادي، إذا كان عدد العيوب يساوي Re تُقبَل الدفعة.',opts:['صح','خطأ'],ans:1,exp:'خطأ. إذا = Re تُرفض.'},
+      {type:'tf',q:'Acceptance Sampling يحمي الجودة بتكلفة محسوبة بدلاً من الفحص الشامل 100%.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'المرونة في تطبيق المواصفة تعني أن المفتش يستطيع تجاهل أي اشتراط.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'"العيب" (Defect) و"عدم المطابقة" (Nonconformity) مترادفان تماماً.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'في الفحص الأحادي، إذا كان Ac < d < Re يُقبَل مباشرة.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'mc',q:'الفرق الجوهري بين خطأ النوع الأول والثاني؟',opts:['كلاهما يضر المستهلك','النوع الأول يضر المنتج، الثاني يضر المستهلك','النوع الأول يضر المستهلك، الثاني يضر المنتج','كلاهما يضر المنتج'],ans:1,exp:'α = خطر المنتج، β = خطر المستهلك.'},
+      {type:'mc',q:'في معمارية N→n→c→M، ماذا يمثّل "c"؟',opts:['حجم الدفعة','حجم العينة','عدد العيوب المقبول Ac','المستوى الميكروبيولوجي'],ans:2,exp:'c = Ac.'},
+      {type:'mc',q:'الحد المسموح به لـ Salmonella في الدواجن المجمدة وفق GSO 1016؟',opts:['100 وحدة/غرام','غياب تام','10 وحدات/غرام','5×10²'],ans:1,exp:'غياب تام.'},
+      {type:'mc',q:'الفرق بين Class A وClass B في خطط الفحص؟',opts:['A يجمع الأصناف في عينة واحدة، B يفحص كل صنف مستقلاً','لا فرق','A للجافة، B للمبردة','B حجم عينة أكبر دائماً'],ans:0,exp:'Class A مشترك، Class B مستقل.'},
+      {type:'mc',q:'السهم ↑ في جدول ISO 2859 يعني؟',opts:['ارفع حجم الدفعة','انتقل للصف الأعلى للحصول على Ac/Re صريحة','انتقل لمستوى أشد','رفض تلقائي'],ans:1,exp:'الانتقال للصف الأعلى.'},
+      {type:'mc',q:'بعد تحديد Code Letter، ما الخطوة الثالثة؟',opts:['إرسال العينة مباشرة','الرجوع للجدول الرئيسي لاستخراج n وAc وRe','تحديد N','تسجيل المخالفات'],ans:1,exp:'الرجوع للجدول لاستخراج n وAc وRe.'},
+      {type:'mc',q:'ميزة العينة المزدوجة على المفردة؟',opts:['أسرع وأبسط دائماً','تُقلل متوسط حجم العينة الكلي','تُلغي الحاجة لـAQL','لا ميزة'],ans:1,exp:'تُقلل متوسط العينة.'}
+    ]
+  },
+  4: {
+    title: 'اختبار اليوم الرابع — ISO 2859-1 وقواعد الانتقال',
+    questions: [
+      {type:'tf',q:'يبدأ الانتقال للفحص المشدد عند رفض دفعتين أو أكثر من أصل 5 متتالية في الفحص العادي.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'الانتقال للفحص المخفف يحدث تلقائياً بعد قبول 10 دفعات متتالية فقط.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'محرك التبديل يبدأ من 0 ويزيد بمقدار 3 عند كل قبول نظيف.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'إيقاف الفحص (Discontinuation) يحدث عند رفض 10 دفعات في الفحص المشدد.',opts:['صح','خطأ'],ans:1,exp:'خطأ. 5 دفعات وليس 10.'},
+      {type:'tf',q:'AQL = 0 يمثّل أعلى معايير الجودة في ISO 2859-1.',opts:['صح','خطأ'],ans:1,exp:'خطأ. AQL=0 غير قياسي.'},
+      {type:'tf',q:'العينة العشوائية البسيطة تُعطي كل وحدة فرصة متساوية للاختيار.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'Composite Sampling تُقلل التكلفة بتجميع عينات من نقاط مختلفة وتحليلها كعينة واحدة.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'إذا كان عدد العيوب = Re في شجرة قرار الخطة المفردة تُقبَل الدفعة مشروطاً.',opts:['صح','خطأ'],ans:1,exp:'خطأ. تُرفض فوراً.'},
+      {type:'mc',q:'متى يُطبَّق الفحص المشدد وفق ISO 2859-1؟',opts:['عند تحسن الجودة','رفض 2+ من 5 دفعات متتالية في العادي','قبول 10 دفعات + محرك≥30','انخفاض حجم الدفعة'],ans:1,exp:'عند رفض 2 أو أكثر من 5 دفعات.'},
+      {type:'mc',q:'شرط العودة من المشدد للعادي؟',opts:['قبول دفعة واحدة','قبول 5 دفعات متتالية في المشدد','موافقة المورد','انقضاء 30 يوماً'],ans:1,exp:'قبول 5 دفعات متتالية.'},
+      {type:'mc',q:'ماذا تعني قيم AQL غير القياسية؟',opts:['محظورة تماماً','تستلزم خطتين مجاورتين لتحديد n وAc/Re','خاصة بالأغذية الطازجة','للفحص المخفف حصراً'],ans:1,exp:'تستلزم خطتين مجاورتين.'},
+      {type:'mc',q:'دفعة 750 وحدة، Level II، AQL=0.65%. ما رمز العينة والخطوة التالية؟',opts:['رمز J ← سحب 50 مباشرة','رمز J ← الرجوع لجدول II-A','رمز K ← سحب 125','رمز H ← الفحص المشدد'],ans:1,exp:'رمز J ثم الرجوع للجدول.'},
+      {type:'mc',q:'ماذا يحدث عند ظهور سهم ↑ أو ↓ في الجدول؟',opts:['رفض تلقائي','اتبع السهم لأول خطة بقيم Ac/Re صريحة','أضف 10% للعينة','انتقل للمشدد'],ans:1,exp:'الانتقال لأقرب خطة.'},
+      {type:'mc',q:'ميزة الطريقة الطبقية عند وجود تباين كبير في الدفعة؟',opts:['تُقلل العينة بلا قيود','تضمن تمثيل كل طبقة بنسبة متناسبة','لا فرق مع العشوائية البسيطة','أسرع تطبيقاً دائماً'],ans:1,exp:'تضمن التمثيل المتناسب.'},
+      {type:'mc',q:'الفرق بين عينة عدسة المحقق وباقي العينات غير الاحتمالية؟',opts:['لا فرق','عدسة المحقق تستهدف مناطق الشك والخطر تحديداً','عدسة المحقق احتمالية مُصغّرة','غير الاحتمالية أدق إحصائياً'],ans:1,exp:'عدسة المحقق متخصصة في الشك.'}
+    ]
+  },
+  5: {
+    title: 'اختبار اليوم الخامس — التقييم الشامل',
+    questions: [
+      {type:'tf',q:'خطط المتغيرات تحتاج حجم عينة أصغر من خطط الصفات لنفس مستوى الحماية.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'إذا كان عدد العيوب = Ac بالضبط في العينة المفردة تُرفض الدفعة.',opts:['صح','خطأ'],ans:1,exp:'خطأ. تُقبَل.'},
+      {type:'tf',q:'النظام المبني على المخاطر يركّز على النقاط ذات الخطورة العالية.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'AQL يمثّل أسوأ متوسط جودة مقبول للعملية الإنتاجية.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'الانتقال للمخفف يحدث تلقائياً بعد قبول 5 دفعات متتالية.',opts:['صح','خطأ'],ans:1,exp:'خطأ. يحتاج 10 + محرك ≥30 + موافقة.'},
+      {type:'tf',q:'الفحص المشدد يعني رفع حجم العينة أو تشديد حد القبول أو كليهما.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'العينة العشوائية البسيطة تضمن تمثيل جميع طبقات الدفعة تلقائياً.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'في العينة المزدوجة، تُسحب العينة الثانية فقط عند الوقوع في المنطقة الرمادية.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'خطأ النوع الأول α هو احتمال رفض دفعة جيدة.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'رموز حجم العينة في ISO 2859-1 تعتمد فقط على حجم الدفعة.',opts:['صح','خطأ'],ans:1,exp:'خطأ. تعتمد على حجم الدفعة ومستوى الفحص.'},
+      {type:'tf',q:'Lab Funnel يُصور تدرج الوحدات من الإرسالية لوحدة التحليل المخبري.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'tf',q:'المخالفات البسيطة تستوجب نفس إجراءات المعالجة الفورية للمخالفات الخطيرة.',opts:['صح','خطأ'],ans:1,exp:'خطأ.'},
+      {type:'tf',q:'منحنى OC Curve يوضح العلاقة بين جودة الدفعة الواردة واحتمال قبولها.',opts:['صح','خطأ'],ans:0,exp:'صح.'},
+      {type:'mc',q:'دفعة 700 وحدة، Level II. ما رمز حجم العينة؟',opts:['رمز J','رمز K','رمز L','رمز H'],ans:1,exp:'رمز J.'},
+      {type:'mc',q:'رمز J مع AQL=1.0%. ما n وAc الصحيحان؟',opts:['n=80, Ac=2','n=50, Ac=1','n=125, Ac=3','n=80, Ac=1'],ans:0,exp:'n=80 وAc=2.'},
+      {type:'mc',q:'شرط الانتقال للفحص المخفف وفق ISO 2859-1؟',opts:['قبول 10 دفعات فقط','10 دفعات + محرك≥30 + موافقة الجهة','5 دفعات فقط','رفض أقل من 1% خلال شهر'],ans:1,exp:'3 شروط مجتمعة.'},
+      {type:'mc',q:'ماذا يحدث لمحرك التبديل عند رفض دفعة؟',opts:['يُخصم منه 3 نقاط','يُعاد لصفر','يبقى كما هو','ينتقل للمشدد مباشرة'],ans:1,exp:'يُعاد لصفر.'},
+      {type:'mc',q:'الأداة الأنسب لسحب عينات الأغذية الجافة من أكياس مغلقة؟',opts:['Vacuum Sampler','المسبار (Probe/Trier)','Sampling Auger','Trier للجبن'],ans:1,exp:'المسبار.'},
+      {type:'mc',q:'متطلب التعقيم الحراري للمعلبات غير الحمضية؟',opts:['100°C/30 دقيقة','121°C/≥25 دقيقة','90°C/20 دقيقة','121°C/10 دقائق'],ans:1,exp:'121°C لمدة ≥25 دقيقة.'},
+      {type:'mc',q:'الفرق بين المرآة الإحصائية وعدسة المحقق؟',opts:['المرآة تمثّل الدفعة كاملة، العدسة تستهدف الخطر','لا فرق','المرآة أسرع','العدسة للمختبرات فقط'],ans:0,exp:'المرآة عشوائية كاملة، العدسة موجّهة.'},
+      {type:'mc',q:'الحد الأدنى لنقاط سحب شاحنة 90 طن حبوب؟',opts:['4 نقاط','7 نقاط','11 نقطة','15 نقطة'],ans:2,exp:'11 نقطة.'},
+      {type:'mc',q:'تعريف Flushing عند سحب عينات السوائل؟',opts:['تسريع ضخ السائل','تصريف الكميات الأولى لتجنب تلوث جدران الأنبوب','تبريد السائل','تصفية العينة'],ans:1,exp:'تصريف الكميات الأولى.'},
+      {type:'mc',q:'ما الخطوة الأولى عند اكتشاف مخالفة Critical؟',opts:['رفع تقرير خلال 48 ساعة','التوثيق الفوري والإجراء الفوري مع إخطار سلسلة القيادة','أخذ عينات إضافية أولاً','انتظار موافقة المختبر'],ans:1,exp:'التوثيق + الإجراء الفوري + إخطار القيادة.'},
+      {type:'mc',q:'العامل الأكثر تأثيراً في الحفاظ على سلامة العينة أثناء النقل؟',opts:['نوع الوعاء فقط','التحكم في الحرارة والزمن ومنع التلوث المتبادل','حجم العينة','اسم المفتش'],ans:1,exp:'الحرارة + الزمن + منع التلوث.'}
+    ]
+  }
+};
+ 
+// ── URL params ──
+const p    = new URLSearchParams(location.search);
+const wsId = p.get('w') || p.get('wsid');
+const tid  = p.get('t') || p.get('tid');
+let   day  = parseInt(p.get('d') || p.get('day') || '1', 10);
+const LAST_DAY = 5;
+ 
+// ── State ──
+let _trainee=null, _questions=[], _answers=[], _curQ=0, _submitted=false;
+let _timerInterval=null, _examEndTime=null, _evalRatings=[0,0,0,0,0];
+let _unsubReq=null, _unsubExam=null;
+ 
+// ── UI ──
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('s-'+id);
+  if(el) el.classList.add('active');
+}
+ 
+function showTab(name){
+  ['eval','material'].forEach(n=>{
+    const panel = document.getElementById('tab-'+n);
+    const btn   = document.getElementById('btn-tab-'+n);
+    if(panel) panel.style.display = n===name ? 'block' : 'none';
+    if(btn){
+      btn.classList.toggle('active', n===name);
+      btn.style.borderTopColor = n===name ? 'var(--g1)' : 'transparent';
+      btn.style.color = n===name ? 'var(--g1)' : 'var(--muted)';
+    }
+  });
+}
+ 
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+async function init(){
+  if(!wsId||!tid){ show('notfound'); return; }
+  try{
+    // ═══════════════════════════════════════════════════════════════
+    // الإصلاح: قراءة طلب الحضور من المسار الجديد {tid}_day{N}
+    // أولاً نحدد اليوم من URL، ثم نقرأ الطلب من المسار الصحيح
+    // ═══════════════════════════════════════════════════════════════
+    const reqKey = `${tid}_day${day}`;
+ 
+    const [wsSnap, reqSnap, approvalsSnap] = await Promise.all([
+      get(ref(db,`workshops/${wsId}`)),
+      get(ref(db,`workshops/${wsId}/scan_requests/${reqKey}`)),   // ← الإصلاح
+      get(ref(db,`workshops/${wsId}/exam_approvals`))
+    ]);
+ 
+    if(!wsSnap.exists()){ show('notfound'); return; }
+    const ws = wsSnap.val();
+    _trainee = ws.trainees?.[tid];
+    if(!_trainee){ show('notfound'); return; }
+ 
+    // day from scan_request.dayId (authoritative)
+    const req    = reqSnap.exists() ? reqSnap.val() : null;
+    const reqDay = req?.dayId ? parseInt(req.dayId,10) : null;
+    if(reqDay) day = reqDay;
+ 
+    // Update nav
+    document.getElementById('nav-sub').textContent = _trainee.name+' — اليوم '+day;
+    document.getElementById('wait-name').textContent = _trainee.name;
+    document.getElementById('waitexam-name').textContent = _trainee.name;
+ 
+    // Load questions
+    const qd = (window.QUIZ_DATA||{})[day];
+    _questions = qd?.questions||[];
+    if(_questions.length) _answers = new Array(_questions.length).fill(null);
+ 
+    // Already done this day?
+    const res = ws.results?.[tid]?.[day];
+    if(res && !res.absent){
+      showDone(res.quizScore, res.correct||0, _questions.length);
+      if(day>=LAST_DAY) initLastDayUI();
+      return;
+    }
+ 
+    // Restore progress
+    const prog = ws.quiz_progress?.[tid]?.[day];
+    if(prog?.answers) _answers = prog.answers;
+ 
+    // No request for today
+    if(!req || parseInt(req.dayId,10)!==day){
+      const nd = document.getElementById('notfound-day');
+      if(nd) nd.textContent = '📅 اليوم '+day+' — امسح رمز QR للتسجيل';
+      show('notfound'); return;
+    }
+    if(req.status==='rejected'){ show('rejected'); return; }
+ 
+    if(req.status==='pending'){
+      show('waiting');
+      // ═══ الإصلاح: الاستماع على المسار الجديد ═══
+      _unsubReq = onValue(ref(db,`workshops/${wsId}/scan_requests/${reqKey}/status`), snap=>{
+        const st = snap.val();
+        if(st==='approved'){ if(_unsubReq){_unsubReq();_unsubReq=null;} checkExam(); }
+        if(st==='rejected'){ if(_unsubReq){_unsubReq();_unsubReq=null;} show('rejected'); }
+      });
+      return;
+    }
+ 
+    // Approved → check exam
+    checkExam();
+ 
+  }catch(e){ console.error(e); show('notfound'); }
+}
+ 
+async function checkExam(){
+  const examSnap  = await get(ref(db,`workshops/${wsId}/exam_approvals/${day}`));
+  const timerSnap = await get(ref(db,`workshops/${wsId}/exam_timer/${day}`));
+  const isOpen = examSnap.val()==='open';
+  if(timerSnap.exists()&&timerSnap.val()?.endTime) _examEndTime=timerSnap.val().endTime;
+ 
+  if(isOpen){
+    show('waitexam');
+    document.getElementById('exam-ready-box').style.display='block';
+  } else {
+    show('waitexam');
+    _unsubExam = onValue(ref(db,`workshops/${wsId}/exam_approvals/${day}`), snap=>{
+      if(snap.val()==='open'){
+        if(_unsubExam){_unsubExam();_unsubExam=null;}
+        get(ref(db,`workshops/${wsId}/exam_timer/${day}`)).then(ts=>{
+          if(ts.exists()&&ts.val()?.endTime) _examEndTime=ts.val().endTime;
+          document.getElementById('exam-ready-box').style.display='block';
+          document.getElementById('exam-ready-box').scrollIntoView({behavior:'smooth',block:'center'});
+        });
+      }
+    });
+  }
+}
+ 
+// ════════════════════════════════════════════
+// QUIZ
+// ════════════════════════════════════════════
+window.startQuiz = function(){
+  if(_submitted) return;
+  const qd = (window.QUIZ_DATA||{})[day];
+  document.getElementById('quiz-day-title').textContent = qd?.title||'اختبار اليوم '+day;
+  document.getElementById('quiz-trainee').textContent   = _trainee.name+' — '+(_trainee.dept||'');
+  show('quiz');
+  renderNavDots(); renderQuestion(0); startTimer(); saveProgress();
+};
+ 
+function renderNavDots(){
+  const nav=document.getElementById('q-nav');
+  nav.innerHTML=_questions.map((q,i)=>{
+    const ans=_answers[i]; const answered=ans!==null&&ans!==undefined;
+    const isActive=i===_curQ;
+    return`<div onclick="jumpTo(${i})" title="س${i+1}" style="width:26px;height:26px;border-radius:6px;
+      background:${answered?'var(--g1)':'#e5e7eb'};color:${answered?'#fff':'#9ca3af'};
+      font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;border:${isActive?'2.5px solid #f59e0b':'2px solid transparent'};transition:all .2s">${i+1}</div>`;
+  }).join('');
+}
+ 
+function renderQuestion(idx){
+  _curQ=idx;
+  const q=_questions[idx]; if(!q)return;
+  const total=_questions.length;
+  const answered=_answers.filter(a=>a!==null).length;
+  document.getElementById('quiz-prog').style.width=Math.round((idx+1)/total*100)+'%';
+  document.getElementById('quiz-prog-text').textContent=`السؤال ${idx+1} من ${total}`;
+  document.getElementById('quiz-answered-text').textContent=`أجبت: ${answered}`;
+  const userAns=_answers[idx];
+  const opts=q.opts||['صح','خطأ'];
+  const letters=['أ','ب','ج','د'];
+  document.getElementById('q-area').innerHTML=`
+    <div class="card">
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:6px">
+        السؤال ${idx+1}/${total} ${q.type==='tf'?'· صح/خطأ':'· اختيار متعدد'}</div>
+      <div style="font-size:.95rem;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:16px">${q.q}</div>
+      ${opts.map((opt,oi)=>`<button class="opt-btn" onclick="selectAnswer(${oi})"
+        style="${userAns===oi?'border-color:var(--g1);background:var(--g1);color:#fff':''}">
+        <span style="font-weight:900;margin-left:8px">${letters[oi]||oi+1}.</span>${opt}</button>`).join('')}
+    </div>`;
+  document.getElementById('btn-prev').disabled=idx===0;
+  document.getElementById('btn-next').disabled=idx===total-1;
+  document.getElementById('btn-submit').style.display=(answered===total||idx===total-1)?'block':'none';
+  renderNavDots();
+}
+ 
+window.selectAnswer=function(oi){
+  if(_submitted)return;
+  _answers[_curQ]=oi;
+  renderQuestion(_curQ);
+  saveProgress();
+};
+window.navigate=function(dir){ const n=_curQ+dir; if(n>=0&&n<_questions.length)renderQuestion(n); };
+window.jumpTo=function(i){ renderQuestion(i); };
+ 
+async function saveProgress(){
+  if(!wsId||!tid||_submitted)return;
+  try{
+    await set(ref(db,`workshops/${wsId}/quiz_progress/${tid}/${day}`),
+      {answers:_answers,lastUpdated:Date.now(),name:_trainee?.name||'',dept:_trainee?.dept||''});
+  }catch(e){ console.warn(e.message); }
+}
+ 
+function startTimer(){
+  if(!_examEndTime){ document.getElementById('timer-display').textContent=''; return; }
+  updateTimer();
+  _timerInterval=setInterval(()=>{ if(updateTimer()<=0){clearInterval(_timerInterval);submitQuiz();} },1000);
+}
+function updateTimer(){
+  if(!_examEndTime)return 999;
+  const rem=Math.max(0,_examEndTime-Date.now());
+  const m=Math.floor(rem/60000), s=Math.floor((rem%60000)/1000);
+  const el=document.getElementById('timer-display');
+  if(el){ el.textContent=m+':'+String(s).padStart(2,'0'); el.style.color=m<5?'#dc2626':'var(--g1)'; }
+  return rem;
+}
+ 
+window.confirmSubmit=function(){
+  const un=_answers.filter(a=>a===null).length;
+  document.getElementById('modal-msg').textContent=un>0
+    ?`لديك ${un} سؤال لم تجب عليه. هل تريد التسليم؟`:'أجبت على الكل. هل تريد التسليم؟';
+  document.getElementById('submit-modal').style.display='flex';
+};
+ 
+window.submitQuiz=async function(){
+  if(_submitted)return;
+  _submitted=true;
+  document.getElementById('submit-modal').style.display='none';
+  clearInterval(_timerInterval);
+  const total=_questions.length;
+  const correct=_questions.filter((q,i)=>_answers[i]===q.ans).length;
+  const score=total?Math.round(correct/total*100):0;
+  try{
+    await set(ref(db,`workshops/${wsId}/results/${tid}/${day}`),
+      {quizScore:score,exerciseScore:0,correct,total,answers:_answers,submittedAt:new Date().toISOString()});
+    await set(ref(db,`workshops/${wsId}/attendance/${tid}/${day}`),'present');
+    await set(ref(db,`workshops/${wsId}/quiz_progress/${tid}/${day}`),null);
+  }catch(e){ console.error(e.message); }
+  showDone(score,correct,total);
+  if(day>=LAST_DAY) setTimeout(initLastDayUI, 800);
+};
+ 
+function showDone(score,correct,total){
+  show('done');
+  const el=document.getElementById('done-score');
+  el.textContent=score+'%';
+  el.style.color=score>=80?'#059669':score>=60?'#d97706':'#dc2626';
+  const label=score>=85?'ممتاز 🏆':score>=70?'جيد 👍':score>=60?'مقبول ✓':'يحتاج مراجعة 📚';
+  const isLast=day>=LAST_DAY;
+  document.getElementById('done-details').innerHTML=`
+    <div style="font-size:1rem;font-weight:700;margin-bottom:8px">${label}</div>
+    <div style="font-size:.88rem">إجابات صحيحة: <strong>${correct}</strong> من ${total}</div>
+    <div style="margin-top:4px;font-size:.8rem;color:var(--muted)">تم تسجيل نتيجتك ✅</div>
+    ${isLast?'<div style="margin-top:12px;font-size:.88rem;color:var(--g1);font-weight:700">⭐ قيّم المدرب لفتح المادة العلمية</div>':'<div style="margin-top:10px;font-size:.82rem;color:var(--muted)">امسح QR اليوم التالي 📱</div>'}`;
+}
+ 
+// ════════════════════════════════════════════
+// LAST DAY — EVAL → MATERIAL
+// ════════════════════════════════════════════
+function initLastDayUI(){
+  if(day<LAST_DAY) return;
+  const bar = document.getElementById('bottom-tabs');
+  if(bar) bar.style.display = 'grid';
+  const matBtn = document.getElementById('btn-tab-material');
+  if(matBtn) matBtn.style.display = 'none';
+  const evalPanel = document.getElementById('tab-eval');
+  const matPanel  = document.getElementById('tab-material');
+  if(evalPanel) evalPanel.style.display = 'block';
+  if(matPanel)  matPanel.style.display  = 'none';
+  buildEvalForm();
+  checkEvalStatus();
+}
+ 
+function buildEvalForm(){
+  const criteria=['وضوح الشرح والأسلوب','التنظيم والتحضير','التفاعل مع المتدربين','الإلمام بالمادة العلمية','الرضا العام'];
+  document.getElementById('eval-criteria').innerHTML=criteria.map((lbl,i)=>`
+    <div style="margin-bottom:16px">
+      <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px">${lbl}</div>
+      <div style="display:flex;gap:6px">
+        ${[1,2,3,4,5].map(s=>`<button onclick="setRating(${i},${s})" id="star-${i}-${s}"
+          style="width:38px;height:38px;border-radius:9px;border:2px solid var(--border);
+          background:var(--card);font-size:1.1rem;cursor:pointer;transition:.15s">⭐</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+ 
+window.setRating=function(idx,stars){
+  _evalRatings[idx]=stars;
+  [1,2,3,4,5].forEach(s=>{
+    const b=document.getElementById('star-'+idx+'-'+s);
+    if(b){ b.style.background=s<=stars?'#fef3c7':'var(--card)'; b.style.borderColor=s<=stars?'#f59e0b':'var(--border)'; }
+  });
+};
+ 
+async function checkEvalStatus(){
+  try{
+    const snap=await get(ref(db,'workshops/'+wsId+'/evaluations/'+tid));
+    if(snap.exists()) unlockMaterial();
+  }catch(e){}
+}
+ 
+window.submitEval=async function(){
+  if(_evalRatings.some(r=>r===0)){ alert('يرجى تقييم جميع المحاور'); return; }
+  const keys=['clarity','organization','interaction','knowledge','overall'];
+  const data={};
+  keys.forEach((k,i)=>data[k]=_evalRatings[i]);
+  data.comment    = document.getElementById('eval-comment')?.value.trim()||'';
+  data.tid        = tid;
+  data.name       = _trainee?.name||'';
+  data.submittedAt= new Date().toISOString();
+  try{
+    await set(ref(db,'workshops/'+wsId+'/evaluations/'+tid),data);
+    unlockMaterial();
+  }catch(e){ alert('حدث خطأ. حاول مرة أخرى.'); }
+};
+ 
+function unlockMaterial(){
+  const form=document.getElementById('eval-form');
+  const done=document.getElementById('eval-done-msg');
+  if(form) form.style.display='none';
+  if(done) done.style.display='block';
+  const matBtn=document.getElementById('btn-tab-material');
+  if(matBtn){ matBtn.style.display='flex'; }
+  setTimeout(()=>{
+    const evalPanel = document.getElementById('tab-eval');
+    const matPanel  = document.getElementById('tab-material');
+    if(evalPanel) evalPanel.style.display = 'none';
+    if(matPanel)  matPanel.style.display  = 'block';
+    const evalBtn  = document.getElementById('btn-tab-eval');
+    const matBtnEl = document.getElementById('btn-tab-material');
+    if(evalBtn){ evalBtn.style.borderTopColor='transparent'; evalBtn.style.color='var(--muted)'; }
+    if(matBtnEl){ matBtnEl.style.borderTopColor='var(--g1)'; matBtnEl.style.color='var(--g1)'; }
+    loadMaterial();
+  }, 1000);
+}
+ 
+async function loadMaterial(){
+  try{
+    const snap=await get(ref(db,'workshops/'+wsId+'/materials'));
+    if(!snap.exists()) throw new Error('none');
+    const mats=snap.val();
+    const url=mats.singleUrl||mats[1]?.url||'';
+    if(!url) throw new Error('no url');
+    const fileId=(url.match(/\/d\/([a-zA-Z0-9_-]+)/)||[])[1];
+    if(!fileId) throw new Error('bad id');
+    const iframe=document.getElementById('mat-iframe');
+    const dlLink=document.getElementById('mat-dl-link');
+    const loadEl=document.getElementById('mat-loading');
+    const noneEl=document.getElementById('mat-none');
+    const embedEl=document.getElementById('mat-embed');
+    if(iframe) iframe.src='https://drive.google.com/file/d/'+fileId+'/preview';
+    if(dlLink){ dlLink.href='https://drive.google.com/uc?export=download&id='+fileId; dlLink.style.display='inline-flex'; }
+    if(loadEl) loadEl.style.display='none';
+    if(embedEl) embedEl.style.display='block';
+    if(noneEl) noneEl.style.display='none';
+  }catch(e){
+    const loadEl=document.getElementById('mat-loading');
+    const noneEl=document.getElementById('mat-none');
+    if(loadEl) loadEl.style.display='none';
+    if(noneEl) noneEl.style.display='block';
+  }
+}
+ 
+// ════════════════════════════════════════════
+init().catch(e=>{ console.error(e); show('notfound'); });
+</script>
+</body>
+</html>
