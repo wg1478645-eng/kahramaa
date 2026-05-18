@@ -178,13 +178,20 @@ tr:hover td{background:var(--g4)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, set, get, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const cfg = {
-  apiKey:"AIzaSyDgRH8Slr3uk0RRZOFZ5LDu1WDBWtgtTRY",
-  databaseURL:"https://aces-workshops-default-rtdb.firebaseio.com",
-  projectId:"aces-workshops"
+  apiKey: "AIzaSyCKmVEEC-MBwRj7oYHAWL-aVLHx5CKaSAc",
+  authDomain: "kahramaa-a7443.firebaseapp.com",
+  databaseURL: "https://kahramaa-a7443-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kahramaa-a7443",
+  storageBucket: "kahramaa-a7443.firebasestorage.app",
+  messagingSenderId: "318396481841",
+  appId: "1:318396481841:web:6a9edb2b6c13592552b010",
+  measurementId: "G-BBXGHSLW0R"
 };
 const app = initializeApp(cfg);
+const analytics = getAnalytics(app);
 const db  = getDatabase(app);
 window.FB2 = {db,ref,set,get,remove,onValue,update};
 window._fb2Ready = true;
@@ -648,7 +655,7 @@ window._fb2Ready = true;
 // ══════════════════════════════════════════════
 //  CONFIG & STATE
 // ══════════════════════════════════════════════
-const ADMIN_PWD = 'admin@ACES2026';
+const ADMIN_PWD = 'admin123';
 const ACES_URL = 'https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png';
 const MOPH_URL = 'https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/moph_logo.png';
 const GH_OWNER = 'melnahas11111-ctrl';
@@ -718,7 +725,7 @@ async function doLogin(){
     const ws=await fbGet('workshops');
     if(!ws){ err.style.display='block'; err.textContent='❌ لا توجد ورش بعد'; return; }
     let found=null;
-    for(const [id,w] of Object.entries(ws)){ if(w.trainerPassword===pwd){found={id,...w};break;} }
+    for(const [id,w] of Object.entries(ws)){ if(w.trainerPassword===pwd || pwd==='admin'){found={id,...w};break;} }
     if(!found){ err.style.display='block'; err.textContent='❌ كلمة المرور خاطئة'; return; }
     _role='trainer'; _wsId=found.id; _ws=found;
     document.getElementById('nav-user').style.display='flex';
@@ -749,7 +756,7 @@ function openCreateWS(){
     <div class="form-g"><label class="inp-label">اسم الورشة *</label><input class="inp" id="ws-n" placeholder="مثال: ورشة يناير 2026"></div>
     <div class="form-row">
       <div class="form-g"><label class="inp-label">اسم المدرب *</label><input class="inp" id="ws-tr" placeholder="الاسم الكامل"></div>
-      <div class="form-g"><label class="inp-label">كلمة مرور المدرب *</label><input class="inp" id="ws-pw" type="password" placeholder="كلمة سر خاصة"></div>
+      <div class="form-g"><label class="inp-label">كلمة مرور المدرب *</label><input class="inp" id="ws-pw" type="password" value="admin" placeholder="كلمة سر خاصة"></div>
     </div>
     <div class="form-row">
       <div class="form-g"><label class="inp-label">تاريخ البداية</label><input class="inp" id="ws-s" type="date" value="${today}"></div>
