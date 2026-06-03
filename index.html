@@ -206,7 +206,7 @@ window._fb2Ready = true;
   <img src="https://wg1478645-eng.github.io/kahramaa/aces_logo.png" style="height:42px;width:auto;object-fit:contain" alt="ACES">
     <div>
       <div style="font-size:.78rem;font-weight:900;color:var(--g1)">نظام إدارة الورش التدريبية</div>
-      <div style="font-size:.64rem;color:var(--muted)">سحب العينات الغذائية — 5 أيام</div>
+      <div style="font-size:.64rem;color:var(--muted)">سحب العينات الغذائية — 3 أيام</div>
     </div>
   </div>
   <div id="nav-user" style="display:none;align-items:center;gap:10px">
@@ -417,26 +417,7 @@ window._fb2Ready = true;
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px" id="exam-control-btns">
-        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;border:1.5px solid var(--border)">
-          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:8px">اليوم 1</div>
-          <button class="btn" id="exam-btn-1" onclick="toggleExam(1)" style="width:100%;font-size:.74rem;padding:7px;background:var(--g4);color:var(--g1);border:1.5px solid var(--border)">📝 فتح الاختبار</button>
-        </div>
-        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;border:1.5px solid var(--border)">
-          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:8px">اليوم 2</div>
-          <button class="btn" id="exam-btn-2" onclick="toggleExam(2)" style="width:100%;font-size:.74rem;padding:7px;background:var(--g4);color:var(--g1);border:1.5px solid var(--border)">📝 فتح الاختبار</button>
-        </div>
-        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;border:1.5px solid var(--border)">
-          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:8px">اليوم 3</div>
-          <button class="btn" id="exam-btn-3" onclick="toggleExam(3)" style="width:100%;font-size:.74rem;padding:7px;background:var(--g4);color:var(--g1);border:1.5px solid var(--border)">📝 فتح الاختبار</button>
-        </div>
-        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;border:1.5px solid var(--border)">
-          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:8px">اليوم 4</div>
-          <button class="btn" id="exam-btn-4" onclick="toggleExam(4)" style="width:100%;font-size:.74rem;padding:7px;background:var(--g4);color:var(--g1);border:1.5px solid var(--border)">📝 فتح الاختبار</button>
-        </div>
-        <div style="background:#fff;border-radius:12px;padding:12px;text-align:center;border:1.5px solid var(--border)">
-          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:8px">اليوم 5</div>
-          <button class="btn" id="exam-btn-5" onclick="toggleExam(5)" style="width:100%;font-size:.74rem;padding:7px;background:var(--g4);color:var(--g1);border:1.5px solid var(--border)">📝 فتح الاختبار</button>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -507,7 +488,7 @@ window._fb2Ready = true;
       <h3 style="font-weight:800;color:var(--g1);margin-bottom:8px;font-size:.92rem">✅ سجل الحضور</h3>
       <p style="font-size:.8rem;color:var(--muted);margin-bottom:12px">اضغط على الخلية لتغيير الحالة</p>
       <div class="tbl-scroll"><table>
-        <thead><tr><th>المتدرب</th><th>اليوم 1</th><th>اليوم 2</th><th>اليوم 3</th><th>اليوم 4</th><th>اليوم 5</th><th>الإجمالي</th></tr></thead>
+        <thead><tr><th>المتدرب</th><th>اليوم 1</th><th>اليوم 2</th><th>اليوم 3</th><th>الإجمالي</th></tr></thead>
         <tbody id="att-tbl"></tbody>
       </table></div>
     </div>
@@ -665,8 +646,8 @@ const _t1='Z2hwX0ht';const _t2='TkNKT2NO';const _t3='U0ZZOFVl';
 const _t4='VE9uTk8x';const _t5='TEFqMUI5';const _t6='WnIwTzF3Y3BRdw==';
 function _getToken(){ return atob(_t1+_t2+_t3+_t4+_t5+_t6); }
 let GH_TOKEN = '';
-const DAYS = [1,2,3,4,5];
-const DAY_NAMES = {1:'التقييم المبدئي',2:'التفتيش ومراقبة الجودة',3:'استراتيجيات سحب العينات',4:'التطبيق الميداني',5:'التقييم الشامل'};
+const DAYS = [1,2,3];
+const DAY_NAMES = {1:'اليوم الأول — Quiz 1',2:'اليوم الثاني — Quiz 2',3:'اليوم الثالث — Quiz 3'};
 const EVAL_CRIT = [
   {key:'clarity',label:'وضوح الشرح والأسلوب'},
   {key:'organization',label:'التنظيم والتحضير'},
@@ -1596,7 +1577,7 @@ function renderPerformance(){
     <div class="kpi go"><div class="v">${overall}%</div><div class="l">متوسط الدرجات</div></div>
     <div class="kpi g"><div class="v">${passed}</div><div class="l">ناجح ≥60%</div></div>
     <div class="kpi r"><div class="v">${_trainees.length-passed}</div><div class="l">راسب <60%</div></div>
-    <div class="kpi b"><div class="v">${comp}</div><div class="l">أكمل 5 أيام</div></div>`;
+    <div class="kpi b"><div class="v">${comp}</div><div class="l">أكمل 3 أيام</div></div>`;
   const ranked=[..._trainees].map(t=>({...t,avg:getAvg(t.id)})).filter(t=>t.avg!==null).sort((a,b)=>b.avg-a.avg);
   const maxA=Math.max(...ranked.map(t=>t.avg),1);
   document.getElementById('rank-chart').innerHTML=ranked.map((t,i)=>{const col=t.avg>=80?'var(--g1)':t.avg>=60?'var(--gold)':'var(--red)';const m=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';return`<div class="bar-row"><div class="bar-lbl">${m}${t.name}</div><div class="bar-bg"><div class="bar-fill" style="width:${t.avg/maxA*100}%;background:${col}"></div></div><div class="bar-num" style="color:${col}">${t.avg}%</div></div>`;}).join('')||'<p style="color:var(--muted);font-size:.82rem">لا بيانات</p>';
@@ -3065,7 +3046,7 @@ function generateCertificate(trainee, wsData, avgScore){
   certWindow.document.write('<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>شهادة — '+trainee.name+'</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Tajawal,sans-serif;direction:rtl;background:#f5f5f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.cert{width:820px;min-height:580px;background:#fff;border:10px solid #0a5c3e;position:relative;padding:36px 48px}.cert::before{content:"";position:absolute;inset:7px;border:2.5px solid #c8830a;pointer-events:none}.watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.04;font-size:110px;font-weight:900;color:#0a5c3e;pointer-events:none}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #e5e7eb}.cert-main-title{text-align:center;margin-bottom:16px}.name-section{text-align:center;padding:14px 0;margin:14px 0;border-top:2px dashed #e5e7eb;border-bottom:2px dashed #e5e7eb}.trainee-name{font-size:28px;font-weight:900;color:#0a5c3e;margin:6px 0}.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0;text-align:center}.info-item{background:#f9fafb;border-radius:10px;padding:11px}.info-val{font-size:16px;font-weight:900;color:#0a5c3e}.info-lbl{font-size:11px;color:#6b7280;margin-top:2px}.score-badge{display:inline-block;background:linear-gradient(135deg,#0a5c3e,#12a06e);color:#fff;font-size:14px;font-weight:800;padding:5px 18px;border-radius:20px;margin:6px 0}.footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:14px;border-top:2px solid #e5e7eb}.sig-box{text-align:center;min-width:150px}.sig-line{border-bottom:2px solid #374151;margin-bottom:5px;height:36px}.sig-lbl{font-size:12px;color:#374151;font-weight:700}.sig-sub{font-size:10px;color:#9ca3af}@media print{body{background:#fff;padding:0}.no-print{display:none!important}.cert{box-shadow:none}}</style></head><body>');
   certWindow.document.write('<div class="cert"><div class="watermark">ACES</div>');
   certWindow.document.write('<div class="header"><img src="'+MOPH_URL+'" style="height:50px;object-fit:contain" onerror="this.style.display=\'none\'"><div style="text-align:center"><div style="font-size:11px;color:#6b7280;letter-spacing:2px">Certificate of Completion</div><div style="font-size:20px;font-weight:900;color:#0a5c3e">شهادة إتمام</div></div><img src="'+ACES_URL+'" style="height:50px;object-fit:contain" onerror="this.style.display=\'none\'"></div>');
-  certWindow.document.write('<div class="cert-main-title"><div style="font-size:12px;color:#6b7280;margin-bottom:3px">برنامج تدريبي في</div><div style="font-size:28px;font-weight:900;color:#0a5c3e">سحب العينات الغذائية</div><div style="font-size:12px;color:#6b7280">Food Sampling Training Program — 5 Days</div></div>');
+  certWindow.document.write('<div class="cert-main-title"><div style="font-size:12px;color:#6b7280;margin-bottom:3px">برنامج تدريبي في</div><div style="font-size:28px;font-weight:900;color:#0a5c3e">سحب العينات الغذائية</div><div style="font-size:12px;color:#6b7280">Food Sampling Training Program — 3 Days</div></div>');
   certWindow.document.write('<div class="name-section"><div style="font-size:13px;color:#6b7280">يُشهد بأن المتدرب/ة</div><div class="trainee-name">'+trainee.name+'</div><div style="font-size:12px;color:#6b7280">'+trainee.dept+'</div><div><span class="score-badge">'+level+' — '+avgScore+'%</span></div></div>');
   certWindow.document.write('<div class="info-grid"><div class="info-item"><div class="info-val">'+wsData.name.slice(0,18)+'</div><div class="info-lbl">اسم الورشة</div></div><div class="info-item"><div class="info-val">'+wsData.trainerName+'</div><div class="info-lbl">المدرب</div></div><div class="info-item"><div class="info-val">'+dateAr+'</div><div class="info-lbl">تاريخ الإتمام</div></div></div>');
   certWindow.document.write('<div class="footer"><div class="sig-box"><div class="sig-line"></div><div class="sig-lbl">'+wsData.trainerName+'</div><div class="sig-sub">المدرب</div></div><div style="text-align:center"><div style="font-size:10px;color:#9ca3af;margin-bottom:3px">'+(wsData.org||'وزارة الصحة العامة — دولة قطر')+'</div><div style="background:#0a5c3e;color:#fff;font-size:10px;font-weight:700;padding:4px 14px;border-radius:20px">صادر: '+new Date().toLocaleDateString('ar-SA')+'</div></div><div class="sig-box"><div class="sig-line"></div><div class="sig-lbl">المشرف العام</div><div class="sig-sub">ACES System</div></div></div>');
@@ -3100,7 +3081,7 @@ function openCertificatesModal(wsId){
       <div>
         <span style="font-weight:900">${t.name}</span>
         <span style="font-size:.72rem;color:var(--muted);margin-right:8px">${t.dept||''}</span>
-        <span class="badge ${att>=4?'g':att>=2?'go':'r'}" style="font-size:.65rem">${att}/5 أيام</span>
+        <span class="badge ${att>=4?'g':att>=2?'go':'r'}" style="font-size:.65rem">${att}/3 أيام</span>
         ${issued?'<span class="badge g" style="font-size:.65rem;margin-right:4px">✅ صادرة</span>':''}
       </div>
       <button onclick="_prevCert('${wsId}',${i})"
@@ -4227,15 +4208,15 @@ async function generateWordReport(lang="ar") {
     const WS = _ws;
     const LANG = lang;
     const RTL = lang === 'ar';
-    const DAYS = [1,2,3,4,5];
+    const DAYS = [1,2,3];
     const TT = {
-      ar:{reportTitle:'التقرير النهائي للورشة التدريبية',subtitle:'سحب العينات الغذائية — 5 أيام',summary:'ملخص الورشة',wsInfo:'بيانات الورشة',traineesList:'قائمة المتدربين ودرجاتهم',attendance:'إحصائيات الحضور',evaluations:'تقييمات المدرب',photos:'صور الورشة',footer:'نظام ACES لإدارة ورش تدريب سحب العينات الغذائية',kpi1:'عدد المتدربين',kpi2:'متوسط الأداء',kpi3:'نسبة الحضور',kpi4:'تقييم المدرب',f1:'اسم الورشة',f2:'اسم المدرب',f3:'تاريخ البداية',f4:'تاريخ النهاية',f5:'الجهة المنظِّمة',f6:'الموقع',f7:'عدد المتدربين',f8:'نسبة النجاح',thName:'الاسم',thDept:'الجهة',thDay:'يوم',thAvg:'المتوسط',thLevel:'المستوى',thTrainee:'المتدرب',thTotal:'المجموع',present:'✅ حاضر',absent:'❌ غائب',excused:'⚡ معذور',evalAvg:'المتوسط العام',evalCount:'عدد التقييمات',partRate:'نسبة المشاركة',repDate:'تاريخ التقرير',crit:'المحور',score:'المتوسط',rating:'التقييم',cmts:'تعليقات المتدربين',issued:'إصدار',comp:'أكمل البرنامج',absShort:'غ',ex:'ممتاز',vg:'جيد جداً',gd:'مقبول',wk:'ضعيف',ec:['وضوح الشرح والأسلوب','التنظيم والتحضير','التفاعل مع المتدربين','الإلمام بالمادة العلمية','الرضا العام'],trLbl:'المدرب: ',units:' متدرب',traineesUnit:'متدرب',locale:'ar-EG'},
+      ar:{reportTitle:'التقرير النهائي للورشة التدريبية',subtitle:'سحب العينات الغذائية — 3 أيام',summary:'ملخص الورشة',wsInfo:'بيانات الورشة',traineesList:'قائمة المتدربين ودرجاتهم',attendance:'إحصائيات الحضور',evaluations:'تقييمات المدرب',photos:'صور الورشة',footer:'نظام ACES لإدارة ورش تدريب سحب العينات الغذائية',kpi1:'عدد المتدربين',kpi2:'متوسط الأداء',kpi3:'نسبة الحضور',kpi4:'تقييم المدرب',f1:'اسم الورشة',f2:'اسم المدرب',f3:'تاريخ البداية',f4:'تاريخ النهاية',f5:'الجهة المنظِّمة',f6:'الموقع',f7:'عدد المتدربين',f8:'نسبة النجاح',thName:'الاسم',thDept:'الجهة',thDay:'يوم',thAvg:'المتوسط',thLevel:'المستوى',thTrainee:'المتدرب',thTotal:'المجموع',present:'✅ حاضر',absent:'❌ غائب',excused:'⚡ معذور',evalAvg:'المتوسط العام',evalCount:'عدد التقييمات',partRate:'نسبة المشاركة',repDate:'تاريخ التقرير',crit:'المحور',score:'المتوسط',rating:'التقييم',cmts:'تعليقات المتدربين',issued:'إصدار',comp:'أكمل البرنامج',absShort:'غ',ex:'ممتاز',vg:'جيد جداً',gd:'مقبول',wk:'ضعيف',ec:['وضوح الشرح والأسلوب','التنظيم والتحضير','التفاعل مع المتدربين','الإلمام بالمادة العلمية','الرضا العام'],trLbl:'المدرب: ',units:' متدرب',traineesUnit:'متدرب',locale:'ar-EG'},
       en:{reportTitle:'Final Workshop Training Report',subtitle:'Food Sampling — 5-Day Program',summary:'Workshop Summary',wsInfo:'Workshop Information',traineesList:'Trainees Performance',attendance:'Attendance Statistics',evaluations:'Trainer Evaluations',photos:'Workshop Photos',footer:'ACES Food Sampling Training Workshop Management System',kpi1:'Total Trainees',kpi2:'Avg Performance',kpi3:'Attendance Rate',kpi4:'Trainer Rating',f1:'Workshop Name',f2:'Trainer Name',f3:'Start Date',f4:'End Date',f5:'Organizing Entity',f6:'Location',f7:'No. of Trainees',f8:'Pass Rate (≥60%)',thName:'Name',thDept:'Department',thDay:'Day',thAvg:'Average',thLevel:'Level',thTrainee:'Trainee',thTotal:'Total',present:'✅ Present',absent:'❌ Absent',excused:'⚡ Excused',evalAvg:'Overall Average',evalCount:'No. of Evaluations',partRate:'Participation Rate',repDate:'Report Date',crit:'Criteria',score:'Score',rating:'Rating',cmts:'Trainee Comments',issued:'Issued by',comp:'Completed Program',absShort:'A',ex:'Excellent',vg:'Very Good',gd:'Acceptable',wk:'Weak',ec:['Clarity & Delivery','Organization & Preparation','Interaction with Trainees','Subject Knowledge','Overall Satisfaction'],trLbl:'Trainer: ',units:' Trainees',traineesUnit:'Trainees',locale:'en-GB'}
     };
     const T2 = TT[lang] || TT.ar;
     const FONT2 = RTL ? 'Arial' : 'Calibri';
     const ALIGN2 = RTL ? AlignmentType.RIGHT : AlignmentType.LEFT;
-    const DAY_NAMES = {1:'التقييم المبدئي',2:'التفتيش ومراقبة الجودة',3:'استراتيجيات سحب العينات',4:'التطبيق الميداني',5:'التقييم الشامل'};
+    const DAY_NAMES = {1:'اليوم الأول — Quiz 1',2:'اليوم الثاني — Quiz 2',3:'اليوم الثالث — Quiz 3'};
     const EVAL_CRIT = ['وضوح الشرح والأسلوب','التنظيم والتحضير','التفاعل مع المتدربين','الإلمام بالمادة العلمية','الرضا العام'];
     const EVAL_KEYS = ['clarity','organization','interaction','knowledge','overall'];
 
@@ -4289,7 +4270,7 @@ async function generateWordReport(lang="ar") {
     // Title
     children.push(P('التقرير النهائي للورشة التدريبية',{ctr:true,sz:36,bold:true,col:'0A5C3E',bf:100,af:80}));
     children.push(P(WS.name||'—',{ctr:true,sz:28,bold:true,col:'0E7A54',bf:0,af:60}));
-    children.push(P('سحب العينات الغذائية — 5 أيام',{ctr:true,sz:20,col:'4A7060',bf:0,af:40}));
+    children.push(P('سحب العينات الغذائية — 3 أيام',{ctr:true,sz:20,col:'4A7060',bf:0,af:40}));
     children.push(new Paragraph({alignment:AlignmentType.CENTER,border:{bottom:{style:BorderStyle.SINGLE,size:12,color:'0A5C3E',space:4}},spacing:{before:0,after:200},children:[new TextRun({text:' ',font:'Arial',size:20})]}));
 
     // KPI summary table
