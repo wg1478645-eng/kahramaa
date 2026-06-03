@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1210,6 +1211,19 @@ function renderComparison(){
 }
 
 // ══════════════════════════════════════════════
+//  RENDER EXAM CONTROL BUTTONS
+// ══════════════════════════════════════════════
+function renderExamControls(){
+  const container=document.getElementById('exam-control-btns');
+  if(!container) return;
+  container.innerHTML=DAYS.map(dayId=>`
+    <button id="exam-btn-${dayId}" class="btn btn-s" style="width:100%;justify-content:center;padding:10px;font-size:.82rem;border:1.5px solid var(--border);border-radius:10px;background:var(--g4);color:var(--g1)" onclick="toggleExam(${dayId})">
+      📝 فتح الاختبار — اليوم ${dayId}
+    </button>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
 //  TRAINER LOAD
 // ══════════════════════════════════════════════
 async function loadTrainer(){
@@ -1220,7 +1234,8 @@ async function loadTrainer(){
   _evaluations=data.evaluations||{}; _materials=data.materials||{};
   _photos=data.photos||[];
   renderTrKPIs(); renderTrTable(); buildMaterialsForm(); renderPhotos();
-  // IMPORTANT: updateExamBtns FIRST to set _activeQRDay correctly, THEN render QR
+  // IMPORTANT: render exam buttons FIRST, then updateExamBtns to set _activeQRDay correctly, THEN render QR
+  renderExamControls();
   await updateExamBtns();
   renderInlineQR();
 }
@@ -4570,3 +4585,4 @@ async function saveEditTrainee(){
 </body>
 كيفية توجيه المستخدم لأسئلة مختلفة بناءً على عدد مرات المسح - Manus
 حل مشكلة خطأ رابط QR Code ومعرف الورشة - Manus
+حل مشكلة عدم ظهور أيقونات التحكم في الاختبار - Manus
