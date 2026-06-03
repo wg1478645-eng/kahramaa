@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -2370,8 +2371,9 @@ function traineeCode(id){let h=0;for(let i=0;i<id.length;i++)h=((h<<5)-h+id.char
 function traineeURL(tid, day){
   // Priority: explicit day arg → active open exam day → 1
   const d = day || window._activeQRDay || 1;
-  // Use short URL — less data = denser QR = easier to scan
-  return 'https://melnahas11111-ctrl.github.io/ACES-Workshops/scan.html?w=' + _wsId + '&t=' + tid + '&d=' + d;
+  // Dynamic base URL based on current location
+  const base = location.href.substring(0, location.href.lastIndexOf('/') + 1);
+  return base + 'scan.html?w=' + _wsId + '&t=' + tid + '&d=' + d;
 }
 
 
@@ -4546,3 +4548,4 @@ async function saveEditTrainee(){
   </div>
 </div>
 </body>
+كيفية توجيه المستخدم لأسئلة مختلفة بناءً على عدد مرات المسح - Manus
