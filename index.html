@@ -2381,6 +2381,8 @@ function traineeURL(tid, day){
 function showNewTraineeQR(trainee) {
   const code = traineeCode(trainee.id);
   const url  = traineeURL(trainee.id);
+  const uniqueId = 'copy-btn-' + trainee.id;
+  
   openModal(`📱 QR جاهز — ${trainee.name}`, `
     <div style="text-align:center">
       <div style="background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:16px;padding:18px;color:#fff;margin-bottom:16px">
@@ -2396,13 +2398,15 @@ function showNewTraineeQR(trainee) {
       <div id="qr-popup-canvas" style="margin:0 auto 12px;width:fit-content;background:#fff;padding:10px;border-radius:12px;border:2px solid var(--border)">
         <canvas id="new-trainee-qr" width="220" height="220"></canvas>
       </div>
-      <div style="font-size:.64rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:6px 10px;word-break:break-all;margin-bottom:14px">${url}</div>
-      <div style="display:flex;gap:8px">
+      <div style="font-size:.64rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:6px 10px;word-break:break-all;margin-bottom:14px;font-family:monospace">${url}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="copyToClipboard('${url.replace("'", "\\'")}', '${uniqueId}')" id="${uniqueId}" class="btn btn-g" style="flex:1">📋 نسخ الرابط</button>
         <button onclick="closeModal()" class="btn btn-s" style="flex:1">إغلاق</button>
         <button onclick="trTab('qr',null);closeModal()" class="btn btn-p" style="flex:1">📱 عرض كل QR</button>
       </div>
     </div>
   `);
+  
   // Draw QR after modal opens
   setTimeout(() => {
     const canvas = document.getElementById('new-trainee-qr');
@@ -2432,6 +2436,7 @@ function showNewTraineeQR(trainee) {
 function renderQR(){
   const grid=document.getElementById('qr-grid');
   if(!_trainees.length){grid.innerHTML='<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:30px">أضف متدربين أولاً</p>';return;}
+  
   // Day selector — default to active exam day
   const activeDaySel = window._activeQRDay || 1;
   let daySelectorEl = document.getElementById('qr-day-selector');
@@ -2452,9 +2457,13 @@ function renderQR(){
       if(b){ b.style.background=d===activeDaySel?'var(--g1)':'var(--card)'; b.style.color=d===activeDaySel?'#fff':'var(--text)'; }
     });
   }
+  
   window._activeQRDay = activeDaySel;
   grid.innerHTML=_trainees.map(t=>{
-    const code=traineeCode(t.id);const url=traineeURL(t.id);
+    const code=traineeCode(t.id);
+    const url=traineeURL(t.id);
+    const uniqueId = 'copy-btn-grid-' + t.id;
+    
     return`<div class="card" style="padding:16px;text-align:center;page-break-inside:avoid">
       <div id="qrcanvas-${t.id}" style="width:220px;height:220px;margin:0 auto 10px;background:#fff;border-radius:10px;border:2px solid var(--g5);display:flex;align-items:center;justify-content:center">
         <canvas id="qrc-${t.id}" width="220" height="220" style="border-radius:8px"></canvas>
@@ -2465,16 +2474,23 @@ function renderQR(){
         <div style="color:rgba(255,255,255,.8);font-size:.65rem;font-weight:700;margin-bottom:3px">🔑 كود الدخول</div>
         <div style="color:#fff;font-size:1.6rem;font-weight:900;letter-spacing:6px">${code}</div>
       </div>
-      <div style="font-size:.62rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:5px 8px;word-break:break-all">${url}</div>
+      <div style="font-size:.62rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:5px 8px;word-break:break-all;margin-bottom:8px;font-family:monospace">${url}</div>
+      <button onclick="copyToClipboard('${url.replace("'", "\\'")}', '${uniqueId}')" id="${uniqueId}" class="btn btn-g" style="width:100%;justify-content:center;padding:7px">📋 نسخ الرابط</button>
     </div>`;
   }).join('');
+  
   // Draw QR codes
   setTimeout(()=>_trainees.forEach(t=>drawQROnCanvas('qrc-'+t.id, traineeURL(t.id), 220)), 100);
 }
 
 function showQRModal(tid){
-  const t=_trainees.find(x=>x.id===tid);if(!t)return;
-  const code=traineeCode(tid);const url=traineeURL(tid);
+  const t=_trainees.find(x=>x.id===tid);
+  if(!t) return;
+  
+  const code=traineeCode(tid);
+  const url=traineeURL(tid);
+  const uniqueId = 'copy-btn-modal-' + tid;
+  
   openModal(`📱 QR — ${t.name}`,`
     <div style="text-align:center">
       <div style="font-weight:900;color:var(--g1);font-size:1rem;margin-bottom:14px">${t.name} · ${t.dept}</div>
@@ -2482,7 +2498,11 @@ function showQRModal(tid){
         <div style="color:rgba(255,255,255,.8);font-size:.72rem;font-weight:700;margin-bottom:4px">🔑 كود الدخول</div>
         <div style="color:#fff;font-size:2rem;font-weight:900;letter-spacing:8px">${code}</div>
       </div>
-      <div style="font-size:.65rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:6px 10px;word-break:break-all">${url}</div>
+      <div style="font-size:.65rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:6px 10px;word-break:break-all;margin-bottom:14px;font-family:monospace">${url}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="copyToClipboard('${url.replace("'", "\\'")}', '${uniqueId}')" id="${uniqueId}" class="btn btn-g" style="flex:1">📋 نسخ الرابط</button>
+        <button onclick="closeModal()" class="btn btn-s" style="flex:1">إغلاق</button>
+      </div>
     </div>`);
 }
 
@@ -4549,3 +4569,4 @@ async function saveEditTrainee(){
 </div>
 </body>
 كيفية توجيه المستخدم لأسئلة مختلفة بناءً على عدد مرات المسح - Manus
+حل مشكلة خطأ رابط QR Code ومعرف الورشة - Manus
