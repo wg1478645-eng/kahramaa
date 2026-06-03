@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -22,26 +21,20 @@ body{font-family:'Tajawal',system-ui,sans-serif;background:var(--bg);color:var(-
 .btn-s{background:var(--g4);color:var(--g1);border:1.5px solid var(--g5)}
 .screen{display:none;padding:16px;max-width:680px;margin:0 auto;animation:fadeUp .4s}
 .screen.active{display:block}
-.opt-btn{width:100%;text-align:right;padding:12px 16px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:8px;transition:all .2s;color:var(--text)}
+.opt-btn{width:100%;text-align:right;padding:12px 16px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:.18s}
 .opt-btn:hover:not(:disabled){border-color:var(--g1);background:var(--g4)}
 .prog-bar{height:7px;background:#e5e7eb;border-radius:10px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:10px;transition:width .4s}
 nav{background:var(--card);border-bottom:2px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 nav img{height:36px;object-fit:contain}
- 
-/* ── Bottom tabs (last day only) ── */
-#bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;
-  border-top:2px solid var(--border);grid-template-columns:1fr 1fr;box-shadow:0 -4px 18px rgba(0,0,0,.1)}
-.tab-btn{padding:10px 4px 8px;border:none;background:none;font-family:'Tajawal',sans-serif;
-  font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;
-  align-items:center;gap:3px;border-top:3px solid transparent;color:var(--muted)}
+#bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:2px solid var(--border);grid-template-columns:1fr 1fr;box-shadow:0 -4px 18px rgba(0,0,0,.1)}
+.tab-btn{padding:10px 4px 8px;border:none;background:none;font-family:'Tajawal',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent;color:var(--muted)}
 .tab-btn.active{color:var(--g1);border-top-color:var(--g1)}
 .tab-panel{display:none;padding:16px;max-width:680px;margin:0 auto;padding-bottom:90px}
 .tab-panel.active{display:block}
 </style>
 </head>
 <body>
- 
 <nav>
   <img src="https://raw.githubusercontent.com/melnahas11111-ctrl/ACES-Workshops/main/aces_logo.png" alt="ACES">
   <div>
@@ -49,15 +42,14 @@ nav img{height:36px;object-fit:contain}
     <div style="font-size:.68rem;color:var(--muted)" id="nav-sub">جاري التحميل...</div>
   </div>
 </nav>
- 
-<!-- ════ SCREENS ════ -->
+
 <div id="s-loading" class="screen active">
   <div style="text-align:center;padding:60px 20px">
     <div class="spinner"></div>
     <p style="margin-top:16px;color:var(--muted);font-size:.9rem">جاري التحقق...</p>
   </div>
 </div>
- 
+
 <div id="s-notfound" class="screen">
   <div class="card" style="text-align:center;padding:40px">
     <div style="font-size:3rem;margin-bottom:12px">📱</div>
@@ -66,7 +58,7 @@ nav img{height:36px;object-fit:contain}
     <div id="notfound-day" style="margin-top:14px;background:var(--g4);border-radius:10px;padding:10px;font-weight:700;color:var(--g1);font-size:.85rem"></div>
   </div>
 </div>
- 
+
 <div id="s-rejected" class="screen">
   <div class="card" style="text-align:center;padding:40px">
     <div style="font-size:2.5rem;margin-bottom:12px">🚫</div>
@@ -74,7 +66,7 @@ nav img{height:36px;object-fit:contain}
     <p style="color:var(--muted);font-size:.88rem">تواصل مع المدرب</p>
   </div>
 </div>
- 
+
 <div id="s-waiting" class="screen">
   <div class="card" style="text-align:center;padding:40px">
     <div style="font-size:3rem;margin-bottom:12px;animation:pulse 2s infinite">⏳</div>
@@ -83,7 +75,7 @@ nav img{height:36px;object-fit:contain}
     <div id="wait-name" style="font-weight:900;font-size:1rem;color:var(--text);margin-top:14px"></div>
   </div>
 </div>
- 
+
 <div id="s-waitexam" class="screen">
   <div class="card" style="text-align:center;padding:24px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff">
     <div style="font-size:2rem;margin-bottom:8px">✅</div>
@@ -104,7 +96,7 @@ nav img{height:36px;object-fit:contain}
     </div>
   </div>
 </div>
- 
+
 <div id="s-quiz" class="screen">
   <div class="card" style="padding:14px 18px;margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
@@ -128,7 +120,7 @@ nav img{height:36px;object-fit:contain}
   </div>
   <button class="btn btn-p" id="btn-submit" onclick="confirmSubmit()" style="width:100%;margin-top:10px;display:none">✅ تسليم الاختبار</button>
 </div>
- 
+
 <div id="s-done" class="screen">
   <div class="card" style="text-align:center;padding:40px">
     <div style="font-size:3rem;margin-bottom:12px">🎉</div>
@@ -136,8 +128,7 @@ nav img{height:36px;object-fit:contain}
     <div id="done-details"></div>
   </div>
 </div>
- 
-<!-- ════ LAST DAY TABS ════ -->
+
 <div id="bottom-tabs" style="display:none">
   <button class="tab-btn active" id="btn-tab-eval" onclick="showTab('eval')">
     <span style="font-size:1.3rem">⭐</span>تقييم المدرب
@@ -146,7 +137,7 @@ nav img{height:36px;object-fit:contain}
     <span style="font-size:1.3rem">📚</span>المادة العلمية
   </button>
 </div>
- 
+
 <div class="tab-panel" id="tab-eval" style="display:none">
   <div class="card">
     <div style="font-weight:900;font-size:.95rem;color:var(--g1);margin-bottom:4px">⭐ تقييم المدرب</div>
@@ -161,17 +152,15 @@ nav img{height:36px;object-fit:contain}
       <div style="margin-bottom:14px">
         <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px">تعليق (اختياري)</div>
         <textarea id="eval-comment" rows="3" placeholder="أضف تعليقك هنا..."
-          style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:10px;
-          font-family:'Tajawal',sans-serif;font-size:.85rem;resize:vertical;outline:none"></textarea>
+          style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;font-size:.85rem;resize:vertical;outline:none"></textarea>
       </div>
-      <button onclick="submitEval()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;
-        border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer">
+      <button onclick="submitEval()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer">
         إرسال التقييم ⭐
       </button>
     </div>
   </div>
 </div>
- 
+
 <div class="tab-panel" id="tab-material" style="display:none">
   <div class="card" style="padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
@@ -180,8 +169,7 @@ nav img{height:36px;object-fit:contain}
         <div style="font-size:.74rem;color:rgba(255,255,255,.8);margin-top:2px">تصفح وحمّل المادة</div>
       </div>
       <a id="mat-dl-link" href="#" target="_blank"
-        style="display:none;font-size:.82rem;color:var(--g1);font-weight:800;text-decoration:none;
-        background:#fff;border-radius:9px;padding:8px 16px">⬇️ تحميل</a>
+        style="display:none;font-size:.82rem;color:var(--g1);font-weight:800;text-decoration:none;background:#fff;border-radius:9px;padding:8px 16px">⬇️ تحميل</a>
     </div>
     <div id="mat-loading" style="text-align:center;padding:40px;color:var(--muted)">
       <div class="spinner"></div>
@@ -196,8 +184,7 @@ nav img{height:36px;object-fit:contain}
     </div>
   </div>
 </div>
- 
-<!-- Submit confirm modal -->
+
 <div id="submit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:18px;padding:28px;max-width:340px;width:90%;text-align:center">
     <div style="font-size:2rem;margin-bottom:10px">⚠️</div>
@@ -209,11 +196,11 @@ nav img{height:36px;object-fit:contain}
     </div>
   </div>
 </div>
- 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
- 
+
 const cfg = {
   apiKey: "AIzaSyCKmVEEC-MBwRj7oYHAWL-aVLHx5CKaSAc",
   authDomain: "kahramaa-a7443.firebaseapp.com",
@@ -225,86 +212,76 @@ const cfg = {
   measurementId: "G-BBXGHSLW0R"
 };
 const db  = getDatabase(initializeApp(cfg));
- 
-// ═══════════════════════════════════════════════════════════════
-// محتوى الاختبارات — 3 أيام
-//   type:'mc' → اختيار من متعدد (إجابة واحدة)  ، ans = index
-//   type:'tf' → صح/خطأ (إجابة واحدة)            ، ans = index
-//   type:'ma' → اختر كل ما ينطبق (أكثر من إجابة)، ans = array of indices
-// ═══════════════════════════════════════════════════════════════
+
 window.QUIZ_DATA = {
   1: {
     title: 'Quiz 1 — ISO 9001:2015 (Multiple Choice)',
     questions: [
-      {type:'mc',q:'1. What is the main purpose of ISO 9001:2015?',opts:['Environmental protection','Quality management system requirements','Occupational health and safety','Financial reporting'],ans:1,exp:'الإجابة: B — متطلبات نظام إدارة الجودة.'},
+      {type:'mc',q:'1. What is the main purpose of ISO 9001:2015?',opts:['Environmental protection','Quality management system requirements','Occupational health and safety','Financial reporting'],ans:1,exp:'الإجابة: B'},
       {type:'mc',q:'2. Which clause covers "Context of the Organization"?',opts:['Clause 4','Clause 5','Clause 6','Clause 7'],ans:0,exp:'الإجابة: A — البند 4.'},
-      {type:'mc',q:'3. What does "interested parties" mean in ISO 9001?',opts:['Only customers','Only employees','Stakeholders who can affect or be affected by the QMS','Government agencies only'],ans:2,exp:'الإجابة: C — الأطراف المعنية التي تؤثر أو تتأثر بنظام الجودة.'},
-      {type:'mc',q:'4. What is the purpose of a Quality Policy?',opts:['To define product specifications','To guide the organization\'s direction and commitment to quality','To document procedures','To monitor suppliers'],ans:1,exp:'الإجابة: B — توجيه اتجاه المنظمة والالتزام بالجودة.'},
-      {type:'mc',q:'5. What is the purpose of internal audits?',opts:['To punish employees','To verify QMS conformity and effectiveness','To increase production','To eliminate training'],ans:1,exp:'الإجابة: B — التحقق من مطابقة وفعالية النظام.'},
-      {type:'mc',q:'6. What is "continual improvement"?',opts:['Improving only when problems happen','Ongoing effort to enhance performance','One-time change','Only customer-focused changes'],ans:1,exp:'الإجابة: B — جهد مستمر لتحسين الأداء.'},
-      {type:'mc',q:'7. Who is responsible for the effectiveness of the QMS?',opts:['Quality manager only','Top management','External auditors','Supervisors only'],ans:1,exp:'الإجابة: B — الإدارة العليا.'},
-      {type:'mc',q:'8. What is the purpose of management review?',opts:['Hire new employees','Evaluate QMS performance and ensure suitability','Write procedures','Approve budgets'],ans:1,exp:'الإجابة: B — تقييم أداء النظام والتأكد من ملاءمته.'},
-      {type:'mc',q:'9. Which of the following is NOT a principle of quality management?',opts:['Customer focus','Leadership','Random decision-making','Evidence-based decision making'],ans:2,exp:'الإجابة: C — اتخاذ القرار العشوائي ليس مبدأً.'},
-      {type:'mc',q:'10. What is the PDCA cycle?',opts:['Plan-Do-Check-Act','Prepare-Develop-Control-Act','Plan-Deliver-Control-Assess','Process-Document-Control-Approve'],ans:0,exp:'الإجابة: A — خطط، نفّذ، افحص، تصرّف.'}
+      {type:'mc',q:'3. What does "interested parties" mean in ISO 9001?',opts:['Only customers','Only employees','Stakeholders who can affect or be affected by the QMS','Government agencies only'],ans:2,exp:'الإجابة: C'},
+      {type:'mc',q:'4. What is the purpose of a Quality Policy?',opts:['To define product specifications','To guide the organization\'s direction and commitment to quality','To document procedures','To monitor suppliers'],ans:1,exp:'الإجابة: B'},
+      {type:'mc',q:'5. What is the purpose of internal audits?',opts:['To punish employees','To verify QMS conformity and effectiveness','To increase production','To eliminate training'],ans:1,exp:'الإجابة: B'},
+      {type:'mc',q:'6. What is "continual improvement"?',opts:['Improving only when problems happen','Ongoing effort to enhance performance','One-time change','Only customer-focused changes'],ans:1,exp:'الإجابة: B'},
+      {type:'mc',q:'7. Who is responsible for the effectiveness of the QMS?',opts:['Quality manager only','Top management','External auditors','Supervisors only'],ans:1,exp:'الإجابة: B'},
+      {type:'mc',q:'8. What is the purpose of management review?',opts:['Hire new employees','Evaluate QMS performance and ensure suitability','Write procedures','Approve budgets'],ans:1,exp:'الإجابة: B'},
+      {type:'mc',q:'9. Which of the following is NOT a principle of quality management?',opts:['Customer focus','Leadership','Random decision-making','Evidence-based decision making'],ans:2,exp:'الإجابة: C'},
+      {type:'mc',q:'10. What is the PDCA cycle?',opts:['Plan-Do-Check-Act','Prepare-Develop-Control-Act','Plan-Deliver-Control-Assess','Process-Document-Control-Approve'],ans:0,exp:'الإجابة: A'}
     ]
   },
   2: {
-    title: 'Quiz 2 — ISO 19011 Internal Audit (Select ALL that apply)',
+    title: 'Quiz 2 — ISO 19011 Internal Audit',
     questions: [
-      {type:'ma',q:'1. What are the principles of auditing? (Select ALL that apply)',opts:['Integrity','Confidentiality','Independence','Bias','Evidence-based approach'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'},
-      {type:'ma',q:'2. What are key responsibilities of an auditor? (Select ALL that apply)',opts:['Collect objective evidence','Remain impartial','Provide consultancy during audit','Report findings accurately','Change processes directly'],ans:[0,1,3],exp:'الإجابات: A, B, D.'},
-      {type:'ma',q:'3. What should be included in an audit program? (Select ALL that apply)',opts:['Audit objectives','Audit scope','Audit criteria','Personal opinions','Schedule of audits'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'},
-      {type:'ma',q:'4. What are examples of audit evidence? (Select ALL that apply)',opts:['Records','Interviews','Observations','Assumptions','Measurements'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'},
-      {type:'ma',q:'5. What should be covered in an audit plan? (Select ALL that apply)',opts:['Objectives','Scope','Criteria','Audit team roles','Financial results'],ans:[0,1,2,3],exp:'الإجابات: A, B, C, D.'},
-      {type:'ma',q:'6. What types of audit findings exist? (Select ALL that apply)',opts:['Conformity','Nonconformity','Opportunity for improvement','Financial statement','Observation'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'},
-      {type:'ma',q:'7. During an audit, auditors should: (Select ALL that apply)',opts:['Be objective','Base conclusions on evidence','Argue with auditees','Respect confidentiality','Follow audit plan'],ans:[0,1,3,4],exp:'الإجابات: A, B, D, E.'},
-      {type:'ma',q:'8. What is included in audit reporting? (Select ALL that apply)',opts:['Audit findings','Audit conclusions','Scope and objectives','Personal opinions','Evidence summary'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'},
-      {type:'ma',q:'9. What should happen after the audit? (Select ALL that apply)',opts:['Corrective actions','Follow-up audits','Ignore findings','Verification of actions','Continuous improvement'],ans:[0,1,3,4],exp:'الإجابات: A, B, D, E.'},
-      {type:'ma',q:'10. What are types of audits? (Select ALL that apply)',opts:['Internal audit','External audit','Supplier audit','Financial audit only','Combined audit'],ans:[0,1,2,4],exp:'الإجابات: A, B, C, E.'}
+      {type:'ma',q:'1. What are the principles of auditing?',opts:['Integrity','Confidentiality','Independence','Bias','Evidence-based approach'],ans:[0,1,2,4]},
+      {type:'ma',q:'2. What are key responsibilities of an auditor?',opts:['Collect objective evidence','Remain impartial','Provide consultancy','Report findings','Be subjective'],ans:[0,1,3]},
+      {type:'ma',q:'3. What should be included in an audit program?',opts:['Audit objectives','Audit scope','Audit criteria','Personal opinions','Schedule of audits'],ans:[0,1,2,4]},
+      {type:'ma',q:'4. What are examples of audit evidence?',opts:['Records','Interviews','Observations','Assumptions','Measurements'],ans:[0,1,2,4]},
+      {type:'ma',q:'5. What should be covered in an audit plan?',opts:['Objectives','Scope','Criteria','Audit team roles','Financial results'],ans:[0,1,2,3]},
+      {type:'ma',q:'6. What types of audit findings exist?',opts:['Conformity','Nonconformity','Opportunity for improvement','Financial statement','Observation'],ans:[0,1,2,4]},
+      {type:'ma',q:'7. During an audit, auditors should:',opts:['Be objective','Base conclusions on evidence','Argue with auditees','Respect confidentiality','Follow audit plan'],ans:[0,1,3,4]},
+      {type:'ma',q:'8. What is included in audit reporting?',opts:['Audit findings','Audit conclusions','Scope and objectives','Personal opinions','Evidence summary'],ans:[0,1,2,4]},
+      {type:'ma',q:'9. What should happen after the audit?',opts:['Corrective actions','Follow-up audits','Ignore findings','Verification of actions','Continuous improvement'],ans:[0,1,3,4]},
+      {type:'ma',q:'10. What are types of audits?',opts:['Internal audit','External audit','Supplier audit','Financial audit only','Combined audit'],ans:[0,1,2,4]}
     ]
   },
   3: {
-    title: 'Quiz 3 — Root Cause Analysis (ISO 9001)',
+    title: 'Quiz 3 — Root Cause Analysis',
     questions: [
-      {type:'mc',q:'1. What is the main purpose of Root Cause Analysis in ISO 9001?',opts:['Increase production speed','Identify and eliminate the source of problems','Reduce costs only','Train employees'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'2. The "5 Whys" technique is used to:',opts:['Record audit data','Identify root causes by repeated questioning','Measure process performance','Replace audit reports'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'3. In the 5 Whys method, how many "whys" must always be asked?',opts:['Exactly 5','At least 3','As many as needed to reach the root cause','Only 1'],ans:2,exp:'الإجابة: C.'},
-      {type:'mc',q:'4. Root cause analysis should be based on:',opts:['Assumptions','Evidence and facts','Opinions','Senior management preference'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'5. The Fishbone Diagram is also known as:',opts:['Pareto Chart','Ishikawa Diagram','Control Chart','Histogram'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'6. What is the purpose of a Fishbone Diagram?',opts:['Track time','Categorize possible causes of a problem','Audit financial data','Record procedures'],ans:1,exp:'الإجابة: B.'},
-      {type:'ma',q:'7. Which set represents the typical "6Ms" in a Fishbone Diagram? (Select ALL that apply)',opts:['Man','Method','Machine','Marketing','Material','Measurement'],ans:[0,1,2,4,5],exp:'الإجابات: A, B, C, E, F.'},
-      {type:'mc',q:'8. "Environment" in the Fishbone diagram refers to:',opts:['Financial climate','Workplace conditions affecting processes','Company policies','Customer feedback'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'9. Process flow analysis helps to:',opts:['Increase employee salaries','Visualize steps and identify breakdowns','Replace procedures','Control inventory'],ans:1,exp:'الإجابة: B.'},
-      {type:'mc',q:'10. Which ISO 9001 clause strongly relates to root cause analysis?',opts:['Clause 4','Clause 7','Clause 10 (Improvement)','Clause 5'],ans:2,exp:'الإجابة: C — البند 10 (التحسين).'}
+      {type:'mc',q:'1. What is the main purpose of Root Cause Analysis?',opts:['Increase production speed','Identify and eliminate the source of problems','Reduce costs only','Train employees'],ans:1},
+      {type:'mc',q:'2. The "5 Whys" technique is used to:',opts:['Record audit data','Identify root causes by repeated questioning','Measure process performance','Replace audit reports'],ans:1},
+      {type:'mc',q:'3. In the 5 Whys method, how many "whys" must always be asked?',opts:['Exactly 5','At least 3','As many as needed to reach the root cause','Only 1'],ans:2},
+      {type:'mc',q:'4. Root cause analysis should be based on:',opts:['Assumptions','Evidence and facts','Opinions','Senior management preference'],ans:1},
+      {type:'mc',q:'5. The Fishbone Diagram is also known as:',opts:['Pareto Chart','Ishikawa Diagram','Control Chart','Histogram'],ans:1},
+      {type:'mc',q:'6. What is the purpose of a Fishbone Diagram?',opts:['Track time','Categorize possible causes of a problem','Audit financial data','Record procedures'],ans:1},
+      {type:'ma',q:'7. Which represents the "6Ms" in a Fishbone Diagram?',opts:['Man','Method','Machine','Marketing','Material','Measurement'],ans:[0,1,2,4,5]},
+      {type:'mc',q:'8. "Environment" in the Fishbone diagram refers to:',opts:['Financial climate','Workplace conditions affecting processes','Company policies','Customer feedback'],ans:1},
+      {type:'mc',q:'9. Process flow analysis helps to:',opts:['Increase employee salaries','Visualize steps and identify breakdowns','Replace procedures','Control inventory'],ans:1},
+      {type:'mc',q:'10. Which ISO 9001 clause relates to root cause analysis?',opts:['Clause 4','Clause 7','Clause 10 (Improvement)','Clause 5'],ans:2}
     ]
   }
 };
- 
-// ── URL params ──
+
 const p    = new URLSearchParams(location.search);
 const wsId = p.get('w') || p.get('wsid');
 const tid  = p.get('t') || p.get('tid');
 let   day  = parseInt(p.get('d') || p.get('day') || '1', 10);
-const LAST_DAY = 3;   // ← الورشة 3 أيام (Quiz 1،2،3)
- 
-// ── State ──
+const LAST_DAY = 3;
+
 let _trainee=null, _questions=[], _answers=[], _curQ=0, _submitted=false;
 let _timerInterval=null, _examEndTime=null, _evalRatings=[0,0,0,0,0];
 let _unsubReq=null, _unsubExam=null;
- 
-// ── helper: هل السؤال مُجاب؟ (يتعامل مع الأسئلة متعددة الإجابات) ──
+
 function isAnswered(a, q){
   if(q && q.type==='ma') return Array.isArray(a) && a.length>0;
   return a!==null && a!==undefined;
 }
- 
-// ── UI ──
+
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById('s-'+id);
   if(el) el.classList.add('active');
 }
- 
+
 function showTab(name){
   ['eval','material'].forEach(n=>{
     const panel = document.getElementById('tab-'+n);
@@ -317,62 +294,52 @@ function showTab(name){
     }
   });
 }
- 
-// ════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════
+
 async function init(){
   if(!wsId||!tid){ show('notfound'); return; }
   try{
-    // قراءة طلب الحضور من المسار الخاص باليوم {tid}_day{N}
     const reqKey = `${tid}_day${day}`;
- 
     const [wsSnap, reqSnap, approvalsSnap] = await Promise.all([
       get(ref(db,`workshops/${wsId}`)),
       get(ref(db,`workshops/${wsId}/scan_requests/${reqKey}`)),
       get(ref(db,`workshops/${wsId}/exam_approvals`))
     ]);
- 
+
     if(!wsSnap.exists()){ show('notfound'); return; }
     const ws = wsSnap.val();
     _trainee = ws.trainees?.[tid];
     if(!_trainee){ show('notfound'); return; }
- 
-    // day from scan_request.dayId (authoritative)
+
     const req    = reqSnap.exists() ? reqSnap.val() : null;
     const reqDay = req?.dayId ? parseInt(req.dayId,10) : null;
     if(reqDay) day = reqDay;
- 
-    // Update nav
+
     document.getElementById('nav-sub').textContent = _trainee.name+' — اليوم '+day;
     document.getElementById('wait-name').textContent = _trainee.name;
     document.getElementById('waitexam-name').textContent = _trainee.name;
- 
-    // Load questions
+
     const qd = (window.QUIZ_DATA||{})[day];
     _questions = qd?.questions||[];
     if(_questions.length) _answers = new Array(_questions.length).fill(null);
- 
-    // Already done this day?
+
     const res = ws.results?.[tid]?.[day];
     if(res && !res.absent){
       showDone(res.quizScore, res.correct||0, _questions.length);
       if(day>=LAST_DAY) initLastDayUI();
       return;
     }
- 
-    // Restore progress
+
     const prog = ws.quiz_progress?.[tid]?.[day];
     if(prog?.answers) _answers = prog.answers;
- 
-    // No request for today
+
     if(!req || parseInt(req.dayId,10)!==day){
       const nd = document.getElementById('notfound-day');
       if(nd) nd.textContent = '📅 اليوم '+day+' — امسح رمز QR للتسجيل';
       show('notfound'); return;
     }
+    
     if(req.status==='rejected'){ show('rejected'); return; }
- 
+
     if(req.status==='pending'){
       show('waiting');
       _unsubReq = onValue(ref(db,`workshops/${wsId}/scan_requests/${reqKey}/status`), snap=>{
@@ -382,19 +349,18 @@ async function init(){
       });
       return;
     }
- 
-    // Approved → check exam
+
     checkExam();
- 
+
   }catch(e){ console.error(e); show('notfound'); }
 }
- 
+
 async function checkExam(){
   const examSnap  = await get(ref(db,`workshops/${wsId}/exam_approvals/${day}`));
   const timerSnap = await get(ref(db,`workshops/${wsId}/exam_timer/${day}`));
   const isOpen = examSnap.val()==='open';
   if(timerSnap.exists()&&timerSnap.val()?.endTime) _examEndTime=timerSnap.val().endTime;
- 
+
   if(isOpen){
     show('waitexam');
     document.getElementById('exam-ready-box').style.display='block';
@@ -412,31 +378,29 @@ async function checkExam(){
     });
   }
 }
- 
-// ════════════════════════════════════════════
-// QUIZ
-// ════════════════════════════════════════════
+
 window.startQuiz = function(){
   if(_submitted) return;
+  if(!_questions || _questions.length === 0){
+    alert('❌ لم تحمل الأسئلة!');
+    return;
+  }
   const qd = (window.QUIZ_DATA||{})[day];
   document.getElementById('quiz-day-title').textContent = qd?.title||'اختبار اليوم '+day;
   document.getElementById('quiz-trainee').textContent   = _trainee.name+' — '+(_trainee.dept||'');
   show('quiz');
   renderNavDots(); renderQuestion(0); startTimer(); saveProgress();
 };
- 
+
 function renderNavDots(){
   const nav=document.getElementById('q-nav');
   nav.innerHTML=_questions.map((q,i)=>{
     const answered=isAnswered(_answers[i],q);
     const isActive=i===_curQ;
-    return`<div onclick="jumpTo(${i})" title="س${i+1}" style="width:26px;height:26px;border-radius:6px;
-      background:${answered?'var(--g1)':'#e5e7eb'};color:${answered?'#fff':'#9ca3af'};
-      font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;
-      cursor:pointer;border:${isActive?'2.5px solid #f59e0b':'2px solid transparent'};transition:all .2s">${i+1}</div>`;
+    return`<div onclick="jumpTo(${i})" title="س${i+1}" style="width:26px;height:26px;border-radius:6px;background:${answered?'var(--g1)':'#e5e7eb'};color:${answered?'#fff':'#9ca3af'};font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:${isActive?'2.5px solid #f59e0b':'2px solid transparent'};transition:all .2s">${i+1}</div>`;
   }).join('');
 }
- 
+
 function renderQuestion(idx){
   _curQ=idx;
   const q=_questions[idx]; if(!q)return;
@@ -448,22 +412,15 @@ function renderQuestion(idx){
   const userAns=_answers[idx];
   const opts=q.opts||['صح','خطأ'];
   const letters=['A','B','C','D','E','F'];
-  const typeLabel = q.type==='tf' ? '· صح/خطأ'
-                  : q.type==='ma' ? '· اختر كل الإجابات الصحيحة (أكثر من إجابة)'
-                  : '· اختيار من متعدد';
+  const typeLabel = q.type==='tf' ? '· صح/خطأ': q.type==='ma' ? '· اختر كل الإجابات الصحيحة': '· اختيار من متعدد';
   document.getElementById('q-area').innerHTML=`
     <div class="card">
-      <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:6px">
-        السؤال ${idx+1}/${total} ${typeLabel}</div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:6px">السؤال ${idx+1}/${total} ${typeLabel}</div>
       <div dir="auto" style="font-size:.95rem;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:16px">${q.q}</div>
       ${opts.map((opt,oi)=>{
-        const isSel = q.type==='ma'
-          ? (Array.isArray(userAns) && userAns.includes(oi))
-          : (userAns===oi);
+        const isSel = q.type==='ma' ? (Array.isArray(userAns) && userAns.includes(oi)) : (userAns===oi);
         const mark = q.type==='ma' ? (isSel?'☑':'☐') : (letters[oi]||(oi+1))+'.';
-        return `<button class="opt-btn" dir="auto" onclick="selectAnswer(${oi})"
-          style="${isSel?'border-color:var(--g1);background:var(--g1);color:#fff':''}">
-          <span style="font-weight:900;margin-left:8px">${mark}</span>${opt}</button>`;
+        return `<button class="opt-btn" dir="auto" onclick="selectAnswer(${oi})" style="${isSel?'border-color:var(--g1);background:var(--g1);color:#fff':''}"><span style="font-weight:900;margin-left:8px">${mark}</span>${opt}</button>`;
       }).join('')}
     </div>`;
   document.getElementById('btn-prev').disabled=idx===0;
@@ -471,26 +428,26 @@ function renderQuestion(idx){
   document.getElementById('btn-submit').style.display=(answered===total||idx===total-1)?'block':'none';
   renderNavDots();
 }
- 
+
 window.selectAnswer=function(oi){
   if(_submitted)return;
   const q=_questions[_curQ];
   if(q && q.type==='ma'){
-    // اختيار متعدد: شغّل/أطفئ الخيار
     let arr = Array.isArray(_answers[_curQ]) ? _answers[_curQ].slice() : [];
     const pos = arr.indexOf(oi);
     if(pos>=0) arr.splice(pos,1); else arr.push(oi);
     arr.sort((a,b)=>a-b);
-    _answers[_curQ] = arr;   // قد تكون [] لو ألغى كل الاختيارات
+    _answers[_curQ] = arr;
   } else {
     _answers[_curQ]=oi;
   }
   renderQuestion(_curQ);
   saveProgress();
 };
+
 window.navigate=function(dir){ const n=_curQ+dir; if(n>=0&&n<_questions.length)renderQuestion(n); };
 window.jumpTo=function(i){ renderQuestion(i); };
- 
+
 async function saveProgress(){
   if(!wsId||!tid||_submitted)return;
   try{
@@ -498,12 +455,13 @@ async function saveProgress(){
       {answers:_answers,lastUpdated:Date.now(),name:_trainee?.name||'',dept:_trainee?.dept||''});
   }catch(e){ console.warn(e.message); }
 }
- 
+
 function startTimer(){
   if(!_examEndTime){ document.getElementById('timer-display').textContent=''; return; }
   updateTimer();
   _timerInterval=setInterval(()=>{ if(updateTimer()<=0){clearInterval(_timerInterval);submitQuiz();} },1000);
 }
+
 function updateTimer(){
   if(!_examEndTime)return 999;
   const rem=Math.max(0,_examEndTime-Date.now());
@@ -512,25 +470,23 @@ function updateTimer(){
   if(el){ el.textContent=m+':'+String(s).padStart(2,'0'); el.style.color=m<5?'#dc2626':'var(--g1)'; }
   return rem;
 }
- 
+
 window.confirmSubmit=function(){
   const un=_questions.filter((q,i)=>!isAnswered(_answers[i],q)).length;
-  document.getElementById('modal-msg').textContent=un>0
-    ?`لديك ${un} سؤال لم تجب عليه. هل تريد التسليم؟`:'أجبت على الكل. هل تريد التسليم؟';
+  document.getElementById('modal-msg').textContent=un>0?`لديك ${un} سؤال لم تجب عليه. هل تريد التسليم؟`:'أجبت على الكل. هل تريد التسليم؟';
   document.getElementById('submit-modal').style.display='flex';
 };
- 
-// ── مقارنة إجابة سؤال متعدد الإجابات ──
+
 function isCorrect(q, a){
   if(q.type==='ma'){
     if(!Array.isArray(a)) return false;
     const want=(q.ans||[]).slice().sort((x,y)=>x-y).join(',');
     const got =a.slice().sort((x,y)=>x-y).join(',');
-    return want===got;            // يجب اختيار كل الإجابات الصحيحة فقط
+    return want===got;
   }
   return a===q.ans;
 }
- 
+
 window.submitQuiz=async function(){
   if(_submitted)return;
   _submitted=true;
@@ -548,7 +504,7 @@ window.submitQuiz=async function(){
   showDone(score,correct,total);
   if(day>=LAST_DAY) setTimeout(initLastDayUI, 800);
 };
- 
+
 function showDone(score,correct,total){
   show('done');
   const el=document.getElementById('done-score');
@@ -560,12 +516,9 @@ function showDone(score,correct,total){
     <div style="font-size:1rem;font-weight:700;margin-bottom:8px">${label}</div>
     <div style="font-size:.88rem">إجابات صحيحة: <strong>${correct}</strong> من ${total}</div>
     <div style="margin-top:4px;font-size:.8rem;color:var(--muted)">تم تسجيل نتيجتك ✅</div>
-    ${isLast?'<div style="margin-top:12px;font-size:.88rem;color:var(--g1);font-weight:700">⭐ قيّم المدرب لفتح المادة العلمية</div>':'<div style="margin-top:10px;font-size:.82rem;color:var(--muted)">امسح QR للاختبار التالي 📱</div>'}`;
+    ${isLast?'<div style="margin-top:12px;font-size:.88rem;color:var(--g1);font-weight:700">⭐ قيّم المدرب لفتح المادة العلمية</div>':''}`;
 }
- 
-// ════════════════════════════════════════════
-// LAST DAY — EVAL → MATERIAL
-// ════════════════════════════════════════════
+
 function initLastDayUI(){
   if(day<LAST_DAY) return;
   const bar = document.getElementById('bottom-tabs');
@@ -579,20 +532,18 @@ function initLastDayUI(){
   buildEvalForm();
   checkEvalStatus();
 }
- 
+
 function buildEvalForm(){
   const criteria=['وضوح الشرح والأسلوب','التنظيم والتحضير','التفاعل مع المتدربين','الإلمام بالمادة العلمية','الرضا العام'];
   document.getElementById('eval-criteria').innerHTML=criteria.map((lbl,i)=>`
     <div style="margin-bottom:16px">
       <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px">${lbl}</div>
       <div style="display:flex;gap:6px">
-        ${[1,2,3,4,5].map(s=>`<button onclick="setRating(${i},${s})" id="star-${i}-${s}"
-          style="width:38px;height:38px;border-radius:9px;border:2px solid var(--border);
-          background:var(--card);font-size:1.1rem;cursor:pointer;transition:.15s">⭐</button>`).join('')}
+        ${[1,2,3,4,5].map(s=>`<button onclick="setRating(${i},${s})" id="star-${i}-${s}" style="width:38px;height:38px;border-radius:9px;border:2px solid var(--border);background:var(--card);font-size:1.1rem;cursor:pointer;transition:.15s">⭐</button>`).join('')}
       </div>
     </div>`).join('');
 }
- 
+
 window.setRating=function(idx,stars){
   _evalRatings[idx]=stars;
   [1,2,3,4,5].forEach(s=>{
@@ -600,14 +551,14 @@ window.setRating=function(idx,stars){
     if(b){ b.style.background=s<=stars?'#fef3c7':'var(--card)'; b.style.borderColor=s<=stars?'#f59e0b':'var(--border)'; }
   });
 };
- 
+
 async function checkEvalStatus(){
   try{
     const snap=await get(ref(db,'workshops/'+wsId+'/evaluations/'+tid));
     if(snap.exists()) unlockMaterial();
   }catch(e){}
 }
- 
+
 window.submitEval=async function(){
   if(_evalRatings.some(r=>r===0)){ alert('يرجى تقييم جميع المحاور'); return; }
   const keys=['clarity','organization','interaction','knowledge','overall'];
@@ -622,7 +573,7 @@ window.submitEval=async function(){
     unlockMaterial();
   }catch(e){ alert('حدث خطأ. حاول مرة أخرى.'); }
 };
- 
+
 function unlockMaterial(){
   const form=document.getElementById('eval-form');
   const done=document.getElementById('eval-done-msg');
@@ -642,7 +593,7 @@ function unlockMaterial(){
     loadMaterial();
   }, 1000);
 }
- 
+
 async function loadMaterial(){
   try{
     const snap=await get(ref(db,'workshops/'+wsId+'/materials'));
@@ -669,10 +620,8 @@ async function loadMaterial(){
     if(noneEl) noneEl.style.display='block';
   }
 }
- 
-// ════════════════════════════════════════════
+
 init().catch(e=>{ console.error(e); show('notfound'); });
 </script>
 </body>
 </html>
-Title generation requires clear input content or a specific question. Could you provide more details? - Manus
