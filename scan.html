@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -151,7 +150,7 @@ nav h1{font-size:.88rem;font-weight:900;color:var(--g1)}
 </div>
 </div>
 </div></div>
-
+ 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   const allStates = ['state-loading','state-notfound','state-already','state-form','state-success'];
@@ -160,13 +159,13 @@ document.addEventListener('DOMContentLoaded', function(){
   if(loadEl) loadEl.style.display='block';
   loadFirebase();
 });
-
+ 
 async function loadFirebase(){
   const [{initializeApp},{getDatabase,ref,get,set,update,onValue}] = await Promise.all([
     import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
     import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
   ]);
-
+ 
   const cfg = {
   apiKey: "AIzaSyCKmVEEC-MBwRj7oYHAWL-aVLHx5CKaSAc",
   authDomain: "kahramaa-a7443.firebaseapp.com",
@@ -178,50 +177,56 @@ async function loadFirebase(){
   measurementId: "G-BBXGHSLW0R"
 };
   const db=getDatabase(initializeApp(cfg));
-
+ 
+  // ═══════════════════════════════════════════════════════════════
+  // عدد أيام الورشة (الكويزات) — معرّف في مكان واحد
+  // 3 أيام = Quiz 1 ، Quiz 2 ، Quiz 3
+  // ═══════════════════════════════════════════════════════════════
+  const TOTAL_DAYS = 3;
+  const DAYS = Array.from({length: TOTAL_DAYS}, (_, i) => i + 1); // [1,2,3]
+ 
   const p=new URLSearchParams(location.search);
   const wsId=p.get('w')||p.get('wsid');
   const tid =p.get('t')||p.get('tid');
-
+ 
   // ═══════════════════════════════════════════════════════════════
-  // الإصلاح الرئيسي: مسار الطلب مرتبط باليوم
-  // المسار الجديد: scan_requests/{tid}_day{N}
-  // بدلاً من: scan_requests/{tid}  ← كان يكتب فوق نفسه كل يوم
+  // مسار الطلب مرتبط باليوم: scan_requests/{tid}_day{N}
+  // عشان كل يوم له طلبه المنفصل ولا يكتب فوق غيره
   // ═══════════════════════════════════════════════════════════════
   function reqPath(dayNum){ return 'workshops/'+wsId+'/scan_requests/'+tid+'_day'+dayNum; }
-
+ 
   let day = 1;
   let _approved=false, _redirecting=false, _unsubReq=null, _unsubExam=null;
-
+ 
   function show(id){
     ['state-loading','state-notfound','state-already','state-form','state-success']
       .forEach(s=>{document.getElementById(s).style.display='none';});
     document.getElementById(id).style.display='block';
   }
-
+ 
   function validPhone(v){return /^[0-9+\-\s]{7,15}$/.test(v.trim());}
   function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}
   function examURL(){return 'https://melnahas11111-ctrl.github.io/ACES-Workshops/trainee.html?wsid='+wsId+'&tid='+tid+'&day='+day;}
-
+ 
   async function loadMaterial(){
     // ═══════════════════════════════════════════════════════════════
-    // الإصلاح: المادة العلمية تظهر فقط في اليوم الخامس (الأخير)
+    // المادة العلمية تظهر فقط في اليوم الأخير (اليوم الثالث)
     // وبعد أن يُكمل المتدرب تقييم المدرب
-    // في الأيام 1-4: لا تظهر المادة — ينتقل مباشرة للاختبار
+    // في الأيام 1-2: لا تظهر المادة — ينتقل مباشرة للاختبار
     // ═══════════════════════════════════════════════════════════════
     const wrap  = document.getElementById('mat-viewer-wrap');
     const noMat = document.getElementById('mat-no-material');
     const msgEl = document.getElementById('approved-msg');
-
-    if(day < 5){
-      // أيام 1-4: أخفِ قسم المادة كلياً — انتظار الاختبار فقط
+ 
+    if(day < TOTAL_DAYS){
+      // أيام 1-2: أخفِ قسم المادة كلياً — انتظار الاختبار فقط
       if(wrap)  wrap.style.display  = 'none';
       if(noMat) noMat.style.display = 'none';
       if(msgEl) msgEl.textContent   = 'في انتظار فتح الاختبار من المدرب';
       return;
     }
-
-    // اليوم الخامس: تحقق أن المتدرب أكمل تقييم المدرب أولاً
+ 
+    // اليوم الأخير: تحقق أن المتدرب أكمل تقييم المدرب أولاً
     try{
       const evalSnap = await get(ref(db,'workshops/'+wsId+'/evaluations/'+tid));
       if(!evalSnap.exists()){
@@ -231,12 +236,12 @@ async function loadFirebase(){
         if(msgEl) msgEl.innerHTML     = 'في انتظار فتح الاختبار من المدرب<br><span style="font-size:.74rem;color:var(--muted)">📌 المادة العلمية ستظهر بعد إكمال تقييم المدرب</span>';
         return;
       }
-
+ 
       // أكمل التقييم — أظهر المادة
       const matSnap = await get(ref(db,'workshops/'+wsId+'/materials'));
       if(!matSnap.exists()){ showNoMat(); return; }
       const mats = matSnap.val();
-      const url = mats.singleUrl || mats[5]?.url || mats[1]?.url || '';
+      const url = mats.singleUrl || mats[TOTAL_DAYS]?.url || mats[1]?.url || '';
       if(!url){ showNoMat(); return; }
       const fileId = (url.match(/\/d\/([a-zA-Z0-9_-]+)/) || [])[1];
       if(!fileId){ showNoMat(); return; }
@@ -251,14 +256,14 @@ async function loadFirebase(){
       if(msgEl)  msgEl.textContent = '📚 المادة العلمية متاحة — في انتظار فتح الاختبار';
     }catch(e){ showNoMat(); }
   }
-
+ 
   function showNoMat(){
     const noMat = document.getElementById('mat-no-material');
     const wrap  = document.getElementById('mat-viewer-wrap');
     if(noMat) noMat.style.display = 'block';
     if(wrap)  wrap.style.display  = 'none';
   }
-
+ 
   window.goToExam = function(){
     if(_redirecting) return;
     _redirecting = true;
@@ -266,7 +271,7 @@ async function loadFirebase(){
     try{if(_unsubExam)_unsubExam();}catch(e){}
     location.href = examURL();
   };
-
+ 
   function step(n, state){
     const el = document.getElementById('s'+n);
     const tx = document.getElementById('s'+n+'t');
@@ -276,7 +281,7 @@ async function loadFirebase(){
     else if(state==='active'){ el.classList.add('active'); el.textContent=n; if(tx) tx.classList.remove('muted'); }
     else { el.textContent=n; if(tx) tx.classList.add('muted'); }
   }
-
+ 
   function listenExam(){
     _unsubExam = onValue(ref(db,'workshops/'+wsId+'/exam_approvals/'+day), snap=>{
       const v = snap.exists() ? snap.val() : null;
@@ -291,9 +296,9 @@ async function loadFirebase(){
       }
     });
   }
-
+ 
   // ═══════════════════════════════════════════════════════════════
-  // الإصلاح: الاستماع على المسار الجديد الخاص باليوم
+  // الاستماع على المسار الخاص باليوم
   // ═══════════════════════════════════════════════════════════════
   function listenRequest(){
     _unsubReq = onValue(ref(db, reqPath(day)+'/status'), snap=>{
@@ -315,7 +320,7 @@ async function loadFirebase(){
       }
     });
   }
-
+ 
   async function init(){
     if(!wsId || !tid){ show('state-notfound'); return; }
     try{
@@ -325,36 +330,36 @@ async function loadFirebase(){
         get(ref(db,'workshops/'+wsId+'/exam_approvals')),
         get(ref(db,'workshops/'+wsId+'/name'))
       ]);
-
+ 
       const trainee   = traineeSnap.exists()   ? traineeSnap.val()   : null;
       if(!trainee){ show('state-notfound'); return; }
-
+ 
       const results   = resultsSnap.exists()   ? resultsSnap.val()   : {};
       const approvals = approvalsSnap.exists() ? approvalsSnap.val() : {};
       const wsName    = wsNameSnap.exists()    ? wsNameSnap.val()    : '';
-
-      // ── حساب اليوم التالي: أول يوم بدون نتيجة ──
-      const DAYS   = [1,2,3,4,5];
+ 
+      // ═══════════════════════════════════════════════════════════
+      // التسلسل التلقائي: أول كويز ماخلّصوش المتدرب
+      // scan أول مرة → Quiz 1 ، بعد ما يخلّصه scan → Quiz 2 ، وهكذا
+      // ═══════════════════════════════════════════════════════════
       const nextDay = DAYS.find(d => !results[d] || results[d].absent) || null;
-
+ 
       if(!nextDay){
         show('state-already');
         document.getElementById('already-icon').textContent  = '🎓';
         document.getElementById('already-title').textContent = 'أتممت جميع أيام الورشة!';
-        document.getElementById('already-msg').textContent   = 'تهانينا — لقد أكملت اختبارات الأيام الخمسة بنجاح.';
+        document.getElementById('already-msg').textContent   = 'تهانينا — لقد أكملت اختبارات الأيام الثلاثة بنجاح.';
         document.getElementById('already-extra').innerHTML   = '';
         return;
       }
-
+ 
       day = nextDay;
       const examStatus = approvals[day];
-
-      // ═══════════════════════════════════════════════════════════
-      // الإصلاح: قراءة طلب اليوم الحالي من المسار الجديد
-      // ═══════════════════════════════════════════════════════════
+ 
+      // قراءة طلب اليوم الحالي
       const reqSnap = await get(ref(db, reqPath(day)));
       const req     = reqSnap.exists() ? reqSnap.val() : null;
-
+ 
       if(req){
         if(req.status === 'approved' && examStatus === 'open'){
           window.goToExam(); return;
@@ -373,23 +378,23 @@ async function loadFirebase(){
         }
         // مرفوض → نعيد عرض النموذج
       }
-
+ 
       // ── عرض نموذج التسجيل ليوم nextDay ──
       if(trainee.phone) document.getElementById('inp-phone').value = trainee.phone;
       if(trainee.email) document.getElementById('inp-email').value = trainee.email;
-
+ 
       const ini = (trainee.name||'م').split(' ').map(n=>n[0]||'').join('').slice(0,2).toUpperCase();
       document.getElementById('t-avatar').textContent = ini || '👤';
       document.getElementById('t-name').textContent   = trainee.name || '—';
       document.getElementById('t-dept').textContent   = trainee.dept || '';
       document.getElementById('t-day').textContent    = 'اليوم '+day+' — '+wsName;
       document.title = 'ACES — اليوم '+day+' — '+wsName;
-
+ 
       show('state-form');
-
+ 
     }catch(e){ console.error('init error:',e); show('state-notfound'); }
   }
-
+ 
   function showWaitingApproved(wsName){
     show('state-already');
     document.getElementById('already-icon').textContent  = '✅';
@@ -402,7 +407,7 @@ async function loadFirebase(){
       '<br><span style="display:inline-flex;align-items:center;gap:5px;margin-top:6px">'+
       '<span class="spinner-sm"></span> مراقبة مستمرة — لا تغلق الصفحة</span></p></div>';
   }
-
+ 
   function showWaitingPending(wsName){
     show('state-already');
     document.getElementById('already-icon').textContent  = '⏳';
@@ -413,15 +418,15 @@ async function loadFirebase(){
       'display:flex;align-items:center;justify-content:center;gap:7px">'+
       '<div class="spinner-sm"></div> مراقبة مستمرة — لا تغلق الصفحة</div>';
   }
-
+ 
   // ═══════════════════════════════════════════════════════════════
-  // الإصلاح: الكتابة في المسار الجديد الخاص باليوم
+  // الكتابة في المسار الخاص باليوم
   // ═══════════════════════════════════════════════════════════════
   window.submitAttendance = async function(){
     const phone = document.getElementById('inp-phone').value.trim();
     const email = document.getElementById('inp-email').value.trim();
     let ok = true;
-
+ 
     if(!validPhone(phone)){
       document.getElementById('inp-phone').classList.add('err');
       document.getElementById('err-phone').classList.add('show');
@@ -439,15 +444,15 @@ async function loadFirebase(){
       document.getElementById('err-email').classList.remove('show');
     }
     if(!ok) return;
-
+ 
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
     btn.textContent = '⏳ جاري الإرسال...';
-
+ 
     try{
       const trainee = ((await get(ref(db,'workshops/'+wsId+'/trainees/'+tid))).val()) || {};
-
-      // ── كتابة الطلب في المسار الجديد: scan_requests/{tid}_day{N} ──
+ 
+      // ── كتابة الطلب في المسار الخاص باليوم: scan_requests/{tid}_day{N} ──
       await set(ref(db, reqPath(day)), {
         tid,
         name:      trainee.name || '—',
@@ -459,13 +464,13 @@ async function loadFirebase(){
         status:    'pending',
         scannedAt: new Date().toISOString()
       });
-
+ 
       // تحديث بيانات التواصل في ملف المتدرب
       await update(ref(db,'workshops/'+wsId+'/trainees/'+tid), {phone, email});
-
+ 
       show('state-success');
       listenRequest();
-
+ 
     }catch(e){
       console.error(e);
       btn.disabled = false;
@@ -473,7 +478,7 @@ async function loadFirebase(){
       alert('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
     }
   };
-
+ 
   ['inp-phone','inp-email'].forEach(id=>{
     const el = document.getElementById(id);
     el.addEventListener('input', ()=>{
@@ -485,10 +490,9 @@ async function loadFirebase(){
     });
     el.addEventListener('keypress', e=>{ if(e.key==='Enter') window.submitAttendance(); });
   });
-
+ 
   init();
 } // end loadFirebase
 </script>
 </body>
 </html>
-How to Access Uploaded HTML File Content? - Manus
