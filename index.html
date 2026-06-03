@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -410,18 +411,7 @@ window._fb2Ready = true;
     </div><div id="scan-list"><div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:10px">📱</div><p>في انتظار المتدربين...</p></div></div></div>
     <div class="card" style="background:var(--g4);border-color:var(--g5);margin-top:14px"><div style="display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:var(--g1)"><span style="font-size:1.4rem">💡</span><div><strong>كيف يعمل؟</strong><br><span style="color:var(--muted);line-height:1.8">1️⃣ المتدرب يمسح QR<br>2️⃣ تظهر بطاقته هنا<br>3️⃣ ✅ قبول الحضور<br>4️⃣ 📝 فتح الاختبار للبدء</span></div></div></div>
 
-    <!-- Exam Control Panel -->
-    <div class="card" style="margin-top:14px;border:2px solid var(--blue);background:var(--blue2)">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <div>
-          <div style="font-weight:900;color:var(--blue);font-size:.95rem">📝 التحكم في الاختبار</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-top:2px">فتح الاختبار للمتدربين بعد الموافقة على حضورهم</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px" id="exam-control-btns">
-        
-      </div>
-    </div>
+
   </div>
 
   <!-- Trainees -->
@@ -1211,19 +1201,6 @@ function renderComparison(){
 }
 
 // ══════════════════════════════════════════════
-//  RENDER EXAM CONTROL BUTTONS
-// ══════════════════════════════════════════════
-function renderExamControls(){
-  const container=document.getElementById('exam-control-btns');
-  if(!container) return;
-  container.innerHTML=DAYS.map(dayId=>`
-    <button id="exam-btn-${dayId}" class="btn btn-s" style="width:100%;justify-content:center;padding:10px;font-size:.82rem;border:1.5px solid var(--border);border-radius:10px;background:var(--g4);color:var(--g1)" onclick="toggleExam(${dayId})">
-      📝 فتح الاختبار — اليوم ${dayId}
-    </button>
-  `).join('');
-}
-
-// ══════════════════════════════════════════════
 //  TRAINER LOAD
 // ══════════════════════════════════════════════
 async function loadTrainer(){
@@ -1234,9 +1211,6 @@ async function loadTrainer(){
   _evaluations=data.evaluations||{}; _materials=data.materials||{};
   _photos=data.photos||[];
   renderTrKPIs(); renderTrTable(); buildMaterialsForm(); renderPhotos();
-  // IMPORTANT: render exam buttons FIRST, then updateExamBtns to set _activeQRDay correctly, THEN render QR
-  renderExamControls();
-  await updateExamBtns();
   renderInlineQR();
 }
 
@@ -1491,8 +1465,17 @@ async function acceptScan(tid,dayId){
   await fbSet(`workshops/${_wsId}/attendance/${tid}/${dayId}`,'present');
   if(!_attendance[tid])_attendance[tid]={};
   _attendance[tid][dayId]='present';
+  // فتح الاختبار تلقائياً للمتدرب — بدون الحاجة للمدرب
+  await fbSet(`workshops/${_wsId}/exam_approvals/${dayId}`, 'open');
+  // تعيين وقت افتراضي (60 دقيقة)
+  const endTime = Date.now() + 60*60*1000;
+  await fbSet(`workshops/${_wsId}/exam_timer/${dayId}`, {
+    minutes: 60,
+    endTime: endTime,
+    startedAt: new Date().toISOString()
+  });
   await fbSet(`workshops/${_wsId}/scan_requests/${reqKey}/status`,'approved');
-  toast('✅ تم القبول — اليوم '+dayId);
+  toast('✅ تم القبول — الاختبار مفتوح تلقائياً للمتدرب');
 }
 async function rejectScan(tid,dayId){
   // الإصلاح: المسار يشمل رقم اليوم — scan_requests/{tid}_day{N}
