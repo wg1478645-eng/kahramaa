@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACES — بوابة المتدرب</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap">
+<style>
+:root{
+  --g1:#0a5c3e;--g2:#0e7a54;--g3:#12a06e;--g4:#eaf6f1;--g5:#c8e8d8;
+  --gold:#c8830a;--gold2:#fff7e6;
+  --red:#b83030;--red2:#fde8e8;
+  --blue:#1255a0;--blue2:#e6f0fb;
+  --bg:#f5f9f7;--card:#ffffff;--text:#0e1f18;--muted:#4a7060;--border:#b8d8cc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* NAV */
+nav{background:#fff;border-bottom:2px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:300;box-shadow:0 2px 12px rgba(10,92,62,.10)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{height:36px;width:auto}
+.nav-title{font-size:.8rem;font-weight:900;color:var(--g1);line-height:1.3}
+.nav-sub{font-size:.6rem;color:var(--muted);font-weight:500}
+
+/* SCREENS */
+.screen{display:none;padding:20px 16px;max-width:500px;margin:0 auto;animation:fadeUp .3s ease}
+.screen.active{display:block}
+
+/* CARD */
+.card{background:#fff;border-radius:18px;border:1.5px solid var(--border);box-shadow:0 2px 18px rgba(10,92,62,.07);padding:22px;margin-bottom:16px}
+
+/* BTN */
+.btn{border:none;border-radius:12px;padding:12px 20px;font-family:'Tajawal',sans-serif;font-weight:800;cursor:pointer;transition:.18s;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;box-shadow:0 4px 14px rgba(10,92,62,.27)}
+.btn-s{background:var(--g4);color:var(--g1);border:1.5px solid var(--border)}
+.btn-r{background:var(--red2);color:var(--red);border:1.5px solid #fca5a5}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 14px rgba(245,158,11,.3)}
+
+/* INPUT */
+.inp{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Tajawal',sans-serif;font-size:.95rem;outline:none;transition:.18s;color:var(--text);background:#fff;text-align:center}
+.inp:focus{border-color:var(--g3);box-shadow:0 0 0 3px rgba(18,160,110,.09)}
+
+/* SPINNER */
+.spinner{width:36px;height:36px;border:4px solid var(--g5);border-top-color:var(--g1);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+
+/* STATUS BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:800}
+.badge-g{background:var(--g4);color:var(--g1);border:1.5px solid var(--g5)}
+.badge-gold{background:var(--gold2);color:var(--gold);border:1.5px solid #fde68a}
+.badge-r{background:var(--red2);color:var(--red);border:1.5px solid #fca5a5}
+
+/* QUIZ */
+.q-card{background:#fff;border-radius:14px;border:1.5px solid var(--border);padding:18px;margin-bottom:12px;transition:.2s}
+.q-card.answered{border-color:var(--g3);background:var(--g4)}
+.opt-btn{width:100%;text-align:right;padding:11px 14px;border:2px solid var(--border);border-radius:10px;background:#fff;font-family:'Tajawal',sans-serif;font-size:.88rem;cursor:pointer;transition:.15s;margin-bottom:7px;font-weight:600;color:var(--text);display:block}
+.opt-btn:hover{border-color:var(--g3);background:var(--g4)}
+.opt-btn.selected{border-color:var(--g1);background:var(--g1);color:#fff}
+.opt-btn.correct{border-color:#059669;background:#d1fae5;color:#065f46;pointer-events:none}
+.opt-btn.wrong{border-color:var(--red);background:var(--red2);color:var(--red);pointer-events:none}
+
+/* TIMER BAR */
+.timer-bar-wrap{background:#e5e7eb;border-radius:20px;height:8px;margin-bottom:6px;overflow:hidden}
+.timer-bar{height:100%;border-radius:20px;background:var(--g1);transition:width 1s linear}
+.timer-bar.warn{background:#f59e0b}
+.timer-bar.danger{background:var(--red);animation:blink 1s infinite}
+
+/* RESULT */
+.score-ring{width:130px;height:130px;border-radius:50%;margin:0 auto 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;border:6px solid}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://wg1478645-eng.github.io/kahramaa/aces_logo.png" alt="ACES" onerror="this.style.display='none'">
+    <div>
+      <div class="nav-title">نظام إدارة الورش التدريبية</div>
+      <div class="nav-sub">ISO 9001:2015 Quality Management System</div>
+    </div>
+  </div>
+  <div id="nav-status" style="font-size:.75rem;font-weight:800;color:var(--g1)"></div>
+</nav>
+
+<!-- ══ SCREEN: LOADING ══ -->
+<div id="s-loading" class="screen active">
+  <div style="text-align:center;padding:60px 20px">
+    <div class="spinner" style="width:50px;height:50px;border-width:5px"></div>
+    <p style="margin-top:18px;font-size:.95rem;color:var(--muted);font-weight:700">جارٍ التحقق من البيانات...</p>
+  </div>
+</div>
+
+<!-- ══ SCREEN: ERROR ══ -->
+<div id="s-error" class="screen">
+  <div class="card" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:12px">❌</div>
+    <h2 style="color:var(--red);font-weight:900;margin-bottom:8px" id="err-title">خطأ</h2>
+    <p style="color:var(--muted);font-size:.9rem" id="err-msg">حدث خطأ ما</p>
+    <button class="btn btn-s" style="margin-top:18px;width:auto;padding:10px 24px" onclick="window.close()">إغلاق</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: WELCOME / VERIFY CODE ══ -->
+<div id="s-welcome" class="screen">
+  <div class="card" style="text-align:center">
+    <!-- Trainee info -->
+    <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.8rem;margin:0 auto 14px" id="trainee-avatar">?</div>
+    <h2 style="font-weight:900;font-size:1.25rem;color:var(--g1);margin-bottom:4px" id="trainee-name-display">—</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:4px" id="trainee-dept-display">—</p>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:18px" id="trainee-sid-display"></p>
+    <!-- Day badge -->
+    <div style="background:var(--g4);border:1.5px solid var(--g5);border-radius:12px;padding:10px;margin-bottom:18px">
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:2px">اليوم التدريبي</div>
+      <div style="font-weight:900;color:var(--g1);font-size:1rem" id="day-display">—</div>
+    </div>
+  </div>
+
+  <!-- Already attended -->
+  <div id="s-already" class="card" style="text-align:center;display:none">
+    <div style="font-size:2.5rem;margin-bottom:10px">✅</div>
+    <h3 style="color:var(--g1);font-weight:900;margin-bottom:6px">تم تسجيل حضورك مسبقاً</h3>
+    <p style="color:var(--muted);font-size:.85rem">حضورك لهذا اليوم مسجّل بالفعل في النظام.</p>
+    <button class="btn btn-p" style="margin-top:16px" onclick="goToExamIfOpen()">📝 الاختبار</button>
+  </div>
+
+  <!-- Pending: waiting approval -->
+  <div id="s-pending" class="card" style="text-align:center;display:none">
+    <div class="spinner" style="margin-bottom:16px"></div>
+    <h3 style="color:var(--gold);font-weight:900;margin-bottom:6px">⏳ في انتظار موافقة المدرب</h3>
+    <p style="color:var(--muted);font-size:.85rem">تم إرسال طلبك — انتظر حتى يوافق المدرب على حضورك.</p>
+    <div style="margin-top:14px;font-size:.78rem;color:var(--muted)" id="pending-timer">يتم التحديث تلقائياً...</div>
+  </div>
+
+  <!-- Rejected -->
+  <div id="s-rejected" class="card" style="text-align:center;display:none">
+    <div style="font-size:2.5rem;margin-bottom:10px">❌</div>
+    <h3 style="color:var(--red);font-weight:900;margin-bottom:6px">تم رفض طلب الحضور</h3>
+    <p style="color:var(--muted);font-size:.85rem">تواصل مع المدرب لمزيد من المعلومات.</p>
+  </div>
+
+  <!-- Ready to request entry -->
+  <div id="s-request" class="card" style="text-align:center">
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">أدخل كود الدخول للتحقق من هويتك</div>
+    <input class="inp" id="code-input" type="number" inputmode="numeric" placeholder="× × × × × ×" maxlength="6"
+      style="font-size:1.6rem;font-weight:900;letter-spacing:8px;text-align:center">
+    <p id="code-err" style="display:none;color:var(--red);font-size:.8rem;margin-top:8px">❌ الكود غير صحيح، حاول مرة أخرى</p>
+    <button class="btn btn-p" style="margin-top:14px" onclick="submitEntry()">
+      📲 تسجيل الحضور
+    </button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: EXAM ══ -->
+<div id="s-exam" class="screen">
+  <!-- Timer -->
+  <div class="card" style="padding:14px 18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:.78rem;font-weight:800;color:var(--muted)" id="exam-title-display">الاختبار</span>
+      <span style="font-size:1rem;font-weight:900;color:var(--g1)" id="timer-display">--:--</span>
+    </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:4px">
+      <span id="q-progress-lbl">0 / 0 سؤال</span>
+      <span id="score-live-lbl"></span>
+    </div>
+  </div>
+
+  <!-- Questions -->
+  <div id="quiz-area"></div>
+
+  <!-- Submit -->
+  <button class="btn btn-gold" id="submit-btn" onclick="submitQuiz()" style="display:none;margin-bottom:30px">
+    ✅ إنهاء الاختبار وإرسال الإجابات
+  </button>
+</div>
+
+<!-- ══ SCREEN: RESULT ══ -->
+<div id="s-result" class="screen">
+  <div class="card" style="text-align:center">
+    <div class="score-ring" id="score-ring">
+      <div style="font-size:2rem;font-weight:900" id="score-pct">0%</div>
+      <div style="font-size:.72rem" id="score-lbl">النتيجة</div>
+    </div>
+    <h2 style="font-weight:900;margin-bottom:6px" id="result-title">—</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px" id="result-sub">—</p>
+    <div style="background:var(--g4);border-radius:12px;padding:14px;text-align:right">
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px;font-weight:700">ملخص إجاباتك:</div>
+      <div id="result-breakdown"></div>
+    </div>
+    <button class="btn btn-s" style="margin-top:16px;width:auto;padding:10px 24px" onclick="showReview()">🔍 مراجعة الإجابات</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: REVIEW ══ -->
+<div id="s-review" class="screen">
+  <div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:10px;margin-bottom:4px">
+    <button class="btn btn-s" style="width:auto;padding:8px 16px;font-size:.8rem" onclick="showScreen('s-result')">← العودة</button>
+    <span style="font-weight:800;color:var(--g1)">مراجعة الإجابات</span>
+  </div>
+  <div id="review-area"></div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const cfg = {
+  apiKey: "AIzaSyCKmVEEC-MBwRj7oYHAWL-aVLHx5CKaSAc",
+  authDomain: "kahramaa-a7443.firebaseapp.com",
+  databaseURL: "https://kahramaa-a7443-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kahramaa-a7443",
+  storageBucket: "kahramaa-a7443.firebasestorage.app",
+  messagingSenderId: "318396481841",
+  appId: "1:318396481841:web:6a9edb2b6c13592552b010"
+};
+const app = initializeApp(cfg);
+const db  = getDatabase(app);
+window.FB2 = {db,ref,set,get,remove,onValue,update};
+window._fb2Ready = true;
+window.dispatchEvent(new Event('fb2ready'));
+</script>
+
+<!-- QUIZ DATA -->
+<script>
+window.QUIZ_DATA = {
+  1: {
+    title: 'اختبار اليوم الأول — ISO 2859-1 وأساسيات سحب العينات',
+    questions: [
+      {type:'tf',q:'وفقاً لمعيار ISO 2859-1، عند استخدام مستوى الفحص العادي (Level II) ورمز الحجم N مع AQL = 1.0، يكون عدد العينة 80 وحدة وحد القبول Ac = 2.',opts:['صح','خطأ'],ans:0,exp:'صح. وفقاً لجداول ISO 2859-1، هذه الأرقام صحيحة للفحص العادي.'},
+      {type:'tf',q:'في نظام ISO 2859-1، تنتقل الدفعة من الفحص العادي إلى الفحص المشدد (Tightened) عند رفض دفعتين أو أكثر من أصل 5 دفعات متتالية.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو الشرط المحدد في ISO 2859-1 للانتقال للفحص المشدد.'},
+      {type:'tf',q:'حد الجودة الحدية (LTPD أو RQL) هو مستوى الجودة الذي يُحدد الحد الأدنى المقبول من وجهة نظر المنتج.',opts:['صح','خطأ'],ans:1,exp:'خطأ. LTPD/RQL هو من وجهة نظر المستهلك وليس المنتج.'},
+      {type:'tf',q:'في منطقة الرفض الإحصائي، يكون احتمال رفض الدفعة الجيدة (خطأ النوع الأول α) أعلى من احتمال قبول الدفعة الرديئة (خطأ النوع الثاني β).',opts:['صح','خطأ'],ans:1,exp:'خطأ. لا يمكن الجزم بذلك — يعتمد على الخطة المحددة.'},
+      {type:'tf',q:'العينة العشوائية الطبقية (Stratified Random Sampling) تُقسّم الدفعة إلى طبقات متجانسة وتُسحب منها عينات بنسب متساوية أو متناسبة.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو التعريف الدقيق للعينة الطبقية.'},
+      {type:'tf',q:'في خطة العينة المزدوجة (Double Sampling)، إذا كان عدد العيوب بين Ac1 و Re1 يُتخذ قرار الرفض فوراً.',opts:['صح','خطأ'],ans:1,exp:'خطأ. في هذه الحالة تُسحب عينة ثانية.'},
+      {type:'tf',q:'وفقاً للائحة GSO 1016، تُصنَّف بكتيريا Clostridium botulinum في المعلبات ضمن الفئة الخطرة التي تستوجب الإجراء الفوري.',opts:['صح','خطأ'],ans:0,exp:'صح. هذه البكتيريا خطرة جداً وتستوجب إجراء فورياً.'},
+      {type:'tf',q:'تشير منحنيات OC Curves إلى أنه كلما زاد حجم العينة، كلما انحدر المنحنى بشكل أحد وأصبحت الخطة أكثر تمييزاً.',opts:['صح','خطأ'],ans:0,exp:'صح. زيادة حجم العينة تزيد من قدرة التمييز.'},
+      {type:'tf',q:'الانتقال من الفحص المشدد إلى إيقاف الفحص (Discontinuation) في ISO 2859-1 يحدث عند رفض 10 دفعات.',opts:['صح','خطأ'],ans:1,exp:'خطأ. الإيقاف يحدث عند رفض 5 دفعات وليس 10.'},
+      {type:'tf',q:'محرك درجة التبديل (Switching Score) يبدأ من 0 ويزيد بمقدار 3 عند كل قبول نظيف.',opts:['صح','خطأ'],ans:0,exp:'صح. هذا هو التعريف الصحيح لمحرك التبديل.'},
+      {type:'tf',q:'الفرق بين عدم القبول (Rejection) وعدم الامتثال (Non-conformance) أن الأول قرار إداري والثاني وصف تقني.',opts:['صح','خطأ'],ans:0,exp:'صح. الرفض إداري والعيب وصف تقني.'},
+      {type:'tf',q:'في نموذج العينات المخبرية، تمثّل وحدة العينة الجزء الذي يُرسَل للمختبر وقد تختلف عن وحدة الدفعة.',opts:['صح','خطأ'],ans:0,exp:'صح. وحدة العينة قد تختلف عن وحدة الدفعة.'},
+      {type:'tf',q:'نظام الأمان الإحصائي يتطلب مراجعة خطط أخذ العينات سنوياً فقط.',opts:['صح','خطأ'],ans:1,exp:'خطأ. المراجعة تُجرى عند أي تغيير جوهري كتغيير المورد.'},
+      {type:'mc',q:'دفعة 3500 وحدة، Level II، AQL=0.65%. وُجد 3 وحدات معيبة. ما القرار؟',opts:['قبول — 3 = Ac وفق الجدول','رفض — تجاوز Ac','سحب عينة ثانية','إعادة الفحص'],ans:0,exp:'وفق ISO 2859-1، رمز L مع AQL 0.65% يعطي Ac=3، فعدد العيوب = Ac ← قبول.'},
+      {type:'mc',q:'خطة مزدوجة: n1=80، d1=3، Ac1=1، Re1=4. ما الإجراء التالي؟',opts:['رفض فوري','قبول فوري','سحب عينة ثانية n2=80','إعادة فحص بخطة مفردة'],ans:2,exp:'d1=3 بين Ac1 وRe1 ← منطقة رمادية ← سحب عينة ثانية.'},
+      {type:'mc',q:'عينات متعددة: أعداد تراكمية 1،2،4،5. Re التراكمية=5، Ac=3. القرار؟',opts:['قبول','رفض — العدد = Re','سحب خامسة','إيقاف الفحص'],ans:1,exp:'العدد التراكمي = Re ← رفض فوري.'},
+      {type:'mc',q:'ما المدخل الأساسي الذي يحدد حجم العينة n قبل الوصول للموقع؟',opts:['نوع المنتج فقط','N + IL + AQL معاً','خبرة المفتش','ساعات العمل المتاحة'],ans:1,exp:'ثلاثة مدخلات: N + مستوى الفحص + AQL.'},
+      {type:'mc',q:'فحص زيوت سائبة 50,000 لتر. أي بروتوكول سحب صحيح؟',opts:['عينة واحدة من الأعلى','من الثلث العلوي والأوسط والسفلي مع Flushing','من مخرج الصرف السفلي','فحص الشهادات فقط'],ans:1,exp:'السحب من المستويات الثلاثة مع التحريك والـ Flushing يضمن التمثيل الصحيح.'},
+      {type:'mc',q:'ما الفرق بين تحضير الحبوب الكبيرة (>25جم) والعينات الصغيرة (<5جم)؟',opts:['لا فرق','الكبيرة تُكسر قبل الطحن، الصغيرة تُستخدم مباشرة','الكبيرة تُغمر في الماء','الصغيرة تحتاج طحناً أدق'],ans:1,exp:'الحبوب الكبيرة تحتاج تكسيراً مسبقاً للحصول على توزيع متجانس.'},
+      {type:'mc',q:'ما الدلالة القانونية لـ"العينة الممثلة الممتثلة"؟',opts:['أي عينة من الدفعة','بروتوكول معتمد + بطاقة رسمية + شروط حفظ','عينة نتائجها مقبولة فقط','عينة وقّع عليها المفتش'],ans:1,exp:'ثلاثة عناصر: بروتوكول + توثيق + حفظ. أي إخلال يُبطل قيمتها القانونية.'},
+      {type:'mc',q:'تقسيم 500جم بالربع (Quartering) للحصول على 25جم. كم مرة؟',opts:['مرة واحدة','مرتان','ثلاث مرات','لا يُستخدم للمساحيق'],ans:2,exp:'500←250←125←62.5، ثم تُؤخذ 25جم.'},
+      {type:'mc',q:'بسترة 71°C/14 ثانية بدلاً من 72°C/15 ثانية. التصنيف والإجراء؟',opts:['مخالفة بسيطة','تنبيه كتابي','Critical — إيقاف فوري + سحب عينات','تشديد الفحص فقط'],ans:2,exp:'الانحراف عن معايير البسترة = مخالفة Critical تستوجب إيقاف فورياً.'},
+      {type:'mc',q:'إرسالية 50,000 كيس. الحد الأدنى لنقاط السحب؟',opts:['5 نقاط','7 نقاط','14 نقطة كحد أدنى','20 نقطة'],ans:2,exp:'وفق الجدول القياسي للإرساليات الكبيرة: حد أدنى 14 نقطة.'},
+      {type:'mc',q:'ما الأثر القانوني لسحب عينة بدون بطاقة رسمية؟',opts:['تُقبل مع تحفظ','يحق الطعن وإبطال العينة كدليل','تُخفَّض درجة المخالفة','تُحوَّل للتحكيم'],ans:1,exp:'غياب البطاقة يُتيح الطعن وإبطال العينة قانونياً.'},
+      {type:'mc',q:'Acceptance Sampling يحمي الجودة بتكلفة محسوبة بدلاً من الفحص الشامل 100%.',opts:['صح','خطأ'],ans:0,exp:'صح. سحب العينات يحقق توازناً اقتصادياً.'}
+    ]
+  },
+  2: {
+    title: 'اختبار اليوم الثاني — تقنيات سحب العينات الميدانية',
+    questions: [
+      {type:'tf',q:'العينة المركّبة (Composite Sample) هي خليط من عينات أولية متعددة تُجمع من مواقع مختلفة من نفس الدفعة.',opts:['صح','خطأ'],ans:0,exp:'صح. العينة المركّبة تجمع عينات أولية متعددة لتمثيل الدفعة كاملة.'},
+      {type:'tf',q:'يمكن استخدام نفس أداة السحب دون تعقيم بين عينة وأخرى إذا كانت المنتجات من نفس النوع.',opts:['صح','خطأ'],ans:1,exp:'خطأ. يجب تعقيم أداة السحب بين كل عينة وأخرى لتجنب التلوث المتبادل.'},
+      {type:'tf',q:'درجة حرارة التخزين أثناء نقل عينات الألبان يجب ألا تتجاوز 4°C.',opts:['صح','خطأ'],ans:0,exp:'صح. عينات الألبان تحفظ عند 0-4°C لمنع نمو البكتيريا.'},
+      {type:'tf',q:'بطاقة العينة (Sample Label) تُعدّ وثيقة قانونية اختيارية.',opts:['صح','خطأ'],ans:1,exp:'خطأ. بطاقة العينة وثيقة قانونية إلزامية وغيابها يُبطل قيمة العينة.'},
+      {type:'tf',q:'الفحص البصري للدفعة قبل سحب العينات جزء أساسي من بروتوكول سحب العينات.',opts:['صح','خطأ'],ans:0,exp:'صح. الفحص البصري يُحدد ما إذا كانت الدفعة صالحة للسحب أصلاً.'},
+      {type:'tf',q:'يُعدّ السحب العشوائي البسيط الأسلوب الأمثل دائماً بغض النظر عن طبيعة المنتج.',opts:['صح','خطأ'],ans:1,exp:'خطأ. يتوقف الأسلوب على طبيعة المنتج والدفعة وطريقة التخزين.'},
+      {type:'mc',q:'ما أول خطوة عند وصول المفتش لموقع الدفعة؟',opts:['سحب العينة مباشرة','الفحص البصري والتحقق من وثائق الدفعة','الاتصال بالمختبر','تحضير أوعية العينة'],ans:1,exp:'التحقق من الوثائق والفحص البصري أولاً قبل أي إجراء.'},
+      {type:'mc',q:'ما أدق أداة لسحب عينات من خزان سائل بعمق 3 أمتار؟',opts:['كوب بلاستيكي عادي','Sampling Thief أو بروبة معدنية معقمة','شفاطة يدوية','إناء مفتوح'],ans:1,exp:'Sampling Thief يضمن السحب من العمق المطلوب دون تلوث.'},
+      {type:'mc',q:'كيف تُحدد عدد نقاط سحب العينة من مستودع يحوي 10,000 كيس طحين؟',opts:['نقطتان فقط','7 نقاط كحد أدنى وفق الجداول','حسب وقت المفتش','نقطة واحدة مركزية'],ans:1,exp:'الجداول القياسية تحدد 7 نقاط كحد أدنى لهذا الحجم.'},
+      {type:'mc',q:'ما المقصود بـ"سلسلة الحفظ" (Chain of Custody)؟',opts:['طريقة حفظ العينة في الثلاجة','توثيق تسلسل حيازة العينة من السحب حتى التحليل','سلسلة توريد المنتج','تسلسل فتح أكياس العينة في المختبر'],ans:1,exp:'Chain of Custody = توثيق كل من تداول العينة للحفاظ على نزاهتها القانونية.'},
+      {type:'mc',q:'متى يُلجأ إلى الفحص 100%؟',opts:['دائماً للأمان','فقط عند العينات الحيوية أو المتضاربة أو الخطرة جداً','للمنتجات الرخيصة فقط','عند غياب المفتش'],ans:1,exp:'الفحص 100% مكلف ويُخصص للحالات الحرجة أو التحقيق في النزاعات.'},
+      {type:'mc',q:'ما الفرق بين العينة الأولية والعينة المختبرية؟',opts:['لا فرق','الأولية تُسحب ميدانياً، المختبرية جزء منها يُرسل للتحليل','الأولية أكبر دائماً','المختبرية أكثر دقة'],ans:1,exp:'الأولية من الميدان، والمختبرية جزء مُعدّ للتحليل الفعلي.'}
+    ]
+  },
+  3: {
+    title: 'اختبار اليوم الثالث — التوثيق والجودة والتشريعات',
+    questions: [
+      {type:'tf',q:'معيار ISO/IEC 17025 يُحدد متطلبات كفاءة المختبرات والاعتماد.',opts:['صح','خطأ'],ans:0,exp:'صح. ISO/IEC 17025 هو المعيار الدولي لاعتماد مختبرات الاختبار والمعايرة.'},
+      {type:'tf',q:'يمكن للمفتش رفض الدخول لمنشأة غذائية دون سند قانوني.',opts:['صح','خطأ'],ans:1,exp:'خطأ. المفتش يحتاج تفويضاً قانونياً أو أمر تفتيش رسمي.'},
+      {type:'tf',q:'تقرير التفتيش يُعدّ ملزماً قانونياً ويجب أن يكون موقعاً من المفتش والمنشأة.',opts:['صح','خطأ'],ans:0,exp:'صح. التوقيع يُكسب التقرير قيمته القانونية.'},
+      {type:'tf',q:'Non-conformance تعني رفض الدفعة تلقائياً.',opts:['صح','خطأ'],ans:1,exp:'خطأ. عدم المطابقة وصف تقني وليس قراراً إدارياً بالرفض بالضرورة.'},
+      {type:'tf',q:'HACCP وISO 22000 يكملان بعضهما في منظومة سلامة الغذاء.',opts:['صح','خطأ'],ans:0,exp:'صح. HACCP مبدأ تشغيلي وISO 22000 إطار إداري شامل.'},
+      {type:'mc',q:'ما العنصر الأساسي في تقرير سحب العينات؟',opts:['فقط اسم المنتج','الاسم + التاريخ + الموقع + أسلوب السحب + توقيع المفتش','توقيع المفتش فقط','رقم الدفعة فقط'],ans:1,exp:'تقرير سحب العينات يجب أن يشمل جميع العناصر المذكورة.'},
+      {type:'mc',q:'ما الإجراء الصحيح عند اكتشاف تلوث بكتيري في دفعة غذائية؟',opts:['تحذير شفهي فقط','توثيق فوري + عزل الدفعة + إخطار سلسلة القيادة + إجراء تصحيحي','أخذ عينة إضافية وانتظار','إعادة معالجة الدفعة بدون إخطار'],ans:1,exp:'أي مخالفة خطرة تستوجب توثيقاً فورياً وعزلاً وإخطاراً.'},
+      {type:'mc',q:'ما الفرق بين الإجراء التصحيحي (Corrective) والوقائي (Preventive)؟',opts:['لا فرق','التصحيحي يعالج مشكلة حدثت، الوقائي يمنع حدوثها','التصحيحي أسرع','الوقائي أغلى'],ans:1,exp:'التصحيحي للمشاكل الفعلية، الوقائي لمنع المشاكل المحتملة.'},
+      {type:'mc',q:'ما مدة الاحتفاظ بسجلات الجودة وفق ISO 9001?',opts:['6 أشهر','سنة واحدة','تحددها المنظمة حسب المتطلبات التشريعية والتعاقدية','3 أشهر'],ans:2,exp:'ISO 9001 يُلزم المنظمة بتحديد فترات الاحتفاظ المناسبة.'},
+      {type:'mc',q:'ما معنى AQL في سياق سحب العينات؟',opts:['مستوى الجودة المقبول (Acceptable Quality Level)','كمية العينة المطلوبة','نسبة الرفض القصوى','عدد نقاط السحب'],ans:0,exp:'AQL = Acceptable Quality Level = الحد الأقصى المقبول من العيوب في الدفعات المقبولة.'},
+      {type:'mc',q:'من المسؤول قانونياً عن سلامة العينة بعد سحبها؟',opts:['المختبر فقط','المنشأة المصنّعة','المفتش الذي سحبها حتى تسليمها للمختبر','لا أحد'],ans:2,exp:'المفتش مسؤول عن سلامة العينة ونزاهتها حتى تسليمها رسمياً للمختبر.'}
+    ]
+  }
+};
+</script>
+
+<!-- MAIN LOGIC -->
+<script>
+// ══ URL PARAMS ══
+const params = new URLSearchParams(location.search);
+const WS_ID  = params.get('w');
+const T_ID   = params.get('t');
+const DAY    = parseInt(params.get('d') || '1', 10);
+const DAY_NAMES = {1:'اليوم الأول',2:'اليوم الثاني',3:'اليوم الثالث',4:'اليوم الرابع',5:'اليوم الخامس'};
+
+// ══ STATE ══
+let _trainee = null;
+let _ws = null;
+let _answers = [];
+let _answered = [];
+let _timerInt = null;
+let _pollInt  = null;
+let _quizData = null;
+
+// ══ HELPERS ══
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id)?.classList.add('active'); }
+function fb(){ return window.FB2||null; }
+async function fbGet(p){ const f=fb(); if(!f) return null; try{ const s=await f.get(f.ref(f.db,p)); return s.exists()?s.val():null; }catch(e){ return null; } }
+async function fbSet(p,v){ const f=fb(); if(!f) return; try{ await f.set(f.ref(f.db,p),v); }catch(e){ console.warn(e); } }
+function traineeCode(id){ let h=0; for(let i=0;i<id.length;i++) h=((h<<5)-h+id.charCodeAt(i))|0; return String(Math.abs(h)%900000+100000); }
+function showError(title, msg){ document.getElementById('err-title').textContent=title; document.getElementById('err-msg').textContent=msg; showScreen('s-error'); }
+
+// ══ INIT ══
+function init(){
+  if(!WS_ID||!T_ID){ showError('رابط غير صحيح','يُرجى مسح QR المتدرب الصحيح.'); return; }
+  const f = fb();
+  if(f){ loadData(); } else { window.addEventListener('fb2ready', loadData, {once:true}); setTimeout(()=>{ if(!window.FB2) showError('خطأ في الاتصال','تعذّر الاتصال بقاعدة البيانات. تحقق من الإنترنت.'); }, 8000); }
+}
+
+async function loadData(){
+  const [wsData, traineeData] = await Promise.all([
+    fbGet('workshops/' + WS_ID),
+    fbGet('workshops/' + WS_ID + '/trainees/' + T_ID)
+  ]);
+  if(!wsData){ showError('ورشة غير موجودة','لم يتم العثور على الورشة. تأكد من الرابط.'); return; }
+  if(!traineeData){ showError('متدرب غير موجود','لم يتم العثور على بيانات المتدرب في هذه الورشة.'); return; }
+
+  _ws = wsData;
+  _trainee = traineeData;
+
+  // Populate welcome screen
+  const n = _trainee.name || '—';
+  document.getElementById('trainee-avatar').textContent = n.charAt(0);
+  document.getElementById('trainee-name-display').textContent = n;
+  document.getElementById('trainee-dept-display').textContent = _trainee.dept || '—';
+  if(_trainee.sid) document.getElementById('trainee-sid-display').textContent = 'الرقم: ' + _trainee.sid;
+  document.getElementById('day-display').textContent = DAY_NAMES[DAY] || ('اليوم ' + DAY);
+  document.getElementById('nav-status').textContent = n.split(' ')[0];
+
+  // Check existing attendance
+  const att = await fbGet('workshops/'+WS_ID+'/attendance/'+T_ID+'/'+DAY);
+  if(att === 'present'){
+    hideAllCards();
+    document.getElementById('s-already').style.display='block';
+    showScreen('s-welcome');
+    return;
+  }
+
+  // Check existing scan request
+  const reqKey = T_ID + '_day' + DAY;
+  const req = await fbGet('workshops/'+WS_ID+'/scan_requests/'+reqKey);
+  if(req){
+    if(req.status === 'pending'){ showPending(reqKey); return; }
+    if(req.status === 'approved'){ await onApproved(); return; }
+    if(req.status === 'rejected'){ hideAllCards(); document.getElementById('s-rejected').style.display='block'; showScreen('s-welcome'); return; }
+  }
+
+  // Fresh — show code entry
+  hideAllCards();
+  document.getElementById('s-request').style.display='block';
+  showScreen('s-welcome');
+}
+
+function hideAllCards(){
+  ['s-already','s-pending','s-rejected','s-request'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+}
+
+// ══ ENTRY SUBMISSION ══
+window.submitEntry = async function(){
+  const input = document.getElementById('code-input').value.trim();
+  const expected = traineeCode(T_ID);
+  const errEl = document.getElementById('code-err');
+  errEl.style.display = 'none';
+
+  if(input !== expected){
+    errEl.style.display = 'block';
+    document.getElementById('code-input').style.borderColor = 'var(--red)';
+    setTimeout(()=>{ document.getElementById('code-input').style.borderColor=''; },2000);
+    return;
+  }
+
+  // Write scan request
+  const reqKey = T_ID + '_day' + DAY;
+  await fbSet('workshops/'+WS_ID+'/scan_requests/'+reqKey, {
+    tid: T_ID,
+    dayId: DAY,
+    name: _trainee.name,
+    dept: _trainee.dept || '',
+    sid: _trainee.sid || '',
+    phone: _trainee.phone || '',
+    email: _trainee.email || '',
+    status: 'pending',
+    time: new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'})
+  });
+
+  showPending(reqKey);
+};
+
+// ══ PENDING POLL ══
+function showPending(reqKey){
+  hideAllCards();
+  document.getElementById('s-pending').style.display='block';
+  showScreen('s-welcome');
+  let secs = 0;
+  _pollInt = setInterval(async ()=>{
+    secs++;
+    const lbl = document.getElementById('pending-timer');
+    if(lbl) lbl.textContent = 'انتظر... (' + secs + ' ث)';
+    const req = await fbGet('workshops/'+WS_ID+'/scan_requests/'+reqKey);
+    if(!req) return;
+    if(req.status === 'approved'){ clearInterval(_pollInt); await onApproved(); }
+    if(req.status === 'rejected'){ clearInterval(_pollInt); hideAllCards(); document.getElementById('s-rejected').style.display='block'; }
+  }, 3000);
+}
+
+// ══ ON APPROVED ══
+async function onApproved(){
+  const examStatus = await fbGet('workshops/'+WS_ID+'/exam_approvals/'+DAY);
+  if(examStatus === 'open'){
+    startExam();
+  } else {
+    // Show already card + check periodically
+    hideAllCards();
+    document.getElementById('s-already').style.display='block';
+    showScreen('s-welcome');
+    // Poll for exam to open
+    _pollInt = setInterval(async ()=>{
+      const s = await fbGet('workshops/'+WS_ID+'/exam_approvals/'+DAY);
+      if(s === 'open'){ clearInterval(_pollInt); startExam(); }
+    }, 5000);
+  }
+}
+
+window.goToExamIfOpen = async function(){
+  const s = await fbGet('workshops/'+WS_ID+'/exam_approvals/'+DAY);
+  if(s === 'open'){ startExam(); }
+  else { alert('الاختبار غير مفتوح حالياً. انتظر المدرب.'); }
+};
+
+// ══ EXAM ══
+async function startExam(){
+  const qd = window.QUIZ_DATA?.[DAY];
+  if(!qd || !qd.questions?.length){ showError('لا يوجد اختبار','لا توجد أسئلة لهذا اليوم.'); return; }
+  _quizData = qd;
+
+  // Check if already submitted
+  const res = await fbGet('workshops/'+WS_ID+'/results/'+T_ID+'/'+DAY);
+  if(res && res.quizScore !== undefined && !res.absent){
+    showResult(res.quizScore, res.progress?.answers || []);
+    return;
+  }
+
+  // Load saved progress
+  const prog = await fbGet('workshops/'+WS_ID+'/quiz_progress/'+T_ID+'/'+DAY);
+  _answers = prog?.answers || new Array(_quizData.questions.length).fill(null);
+  if(_answers.length < _quizData.questions.length) _answers = [..._answers, ...new Array(_quizData.questions.length - _answers.length).fill(null)];
+
+  document.getElementById('exam-title-display').textContent = qd.title || ('اختبار اليوم ' + DAY);
+
+  renderQuiz();
+  startTimer();
+  showScreen('s-exam');
+}
+
+function renderQuiz(){
+  const qs = _quizData.questions;
+  const area = document.getElementById('quiz-area');
+  area.innerHTML = qs.map((q,i) => {
+    const sel = _answers[i];
+    return `<div class="q-card ${sel!==null?'answered':''}" id="qc-${i}">
+      <div style="font-size:.72rem;font-weight:800;color:var(--muted);margin-bottom:6px">${q.type==='tf'?'صح / خطأ':'اختيار متعدد'} · السؤال ${i+1} من ${qs.length}</div>
+      <div style="font-weight:800;font-size:.9rem;margin-bottom:12px;line-height:1.6">${q.q}</div>
+      ${q.opts.map((o,j)=>`<button class="opt-btn ${sel===j?'selected':''}" onclick="selectAnswer(${i},${j})">${o}</button>`).join('')}
+    </div>`;
+  }).join('');
+  updateProgress();
+}
+
+window.selectAnswer = async function(qi, oi){
+  _answers[qi] = oi;
+  // Update UI
+  const card = document.getElementById('qc-'+qi);
+  if(card){
+    card.classList.add('answered');
+    card.querySelectorAll('.opt-btn').forEach((b,j)=>{ b.classList.toggle('selected', j===oi); });
+  }
+  updateProgress();
+  // Save progress to Firebase
+  await fbSet('workshops/'+WS_ID+'/quiz_progress/'+T_ID+'/'+DAY, { answers: _answers, savedAt: Date.now() });
+};
+
+function updateProgress(){
+  const total = _quizData.questions.length;
+  const done = _answers.filter(a=>a!==null).length;
+  document.getElementById('q-progress-lbl').textContent = done + ' / ' + total + ' سؤال';
+  const submitBtn = document.getElementById('submit-btn');
+  if(submitBtn) submitBtn.style.display = done === total ? 'flex' : 'none';
+  // Scroll hint
+  const allDone = done === total;
+  if(allDone && submitBtn){ submitBtn.style.animation='pulse 1.5s infinite'; }
+}
+
+// ══ TIMER ══
+async function startTimer(){
+  const timerData = await fbGet('workshops/'+WS_ID+'/exam_timer/'+DAY);
+  const endTime = timerData?.endTime || (Date.now() + 60*60*1000);
+  const totalMs = timerData?.minutes ? timerData.minutes*60*1000 : 60*60*1000;
+
+  function tick(){
+    const remaining = endTime - Date.now();
+    if(remaining <= 0){
+      clearInterval(_timerInt);
+      document.getElementById('timer-display').textContent = '00:00';
+      document.getElementById('timer-bar').style.width = '0%';
+      submitQuiz(true);
+      return;
+    }
+    const mins = Math.floor(remaining/60000);
+    const secs = Math.floor((remaining%60000)/1000);
+    document.getElementById('timer-display').textContent = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+    const pct = Math.min(100, remaining/totalMs*100);
+    const bar = document.getElementById('timer-bar');
+    bar.style.width = pct + '%';
+    bar.className = 'timer-bar' + (remaining<300000?' warn':'') + (remaining<60000?' danger':'');
+  }
+  tick();
+  _timerInt = setInterval(tick, 1000);
+}
+
+// ══ SUBMIT ══
+window.submitQuiz = async function(auto=false){
+  if(!auto && !confirm('هل أنت متأكد من إنهاء الاختبار وإرسال الإجابات؟')) return;
+  clearInterval(_timerInt);
+
+  const qs = _quizData.questions;
+  let correct = 0;
+  _answers.forEach((a,i)=>{ if(a === qs[i].ans) correct++; });
+  const score = Math.round(correct/qs.length*100);
+
+  const time = new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+  await fbSet('workshops/'+WS_ID+'/results/'+T_ID+'/'+DAY, {
+    quizScore: score,
+    exerciseScore: score,
+    absent: false,
+    time: time,
+    progress: { answers: _answers, submittedAt: Date.now() }
+  });
+  // Clean up progress
+  await fbSet('workshops/'+WS_ID+'/quiz_progress/'+T_ID+'/'+DAY, null);
+
+  showResult(score, _answers);
+};
+
+// ══ RESULT ══
+function showResult(score, answers){
+  const ring = document.getElementById('score-ring');
+  const passed = score >= 60;
+  const color = score>=80?'#0a5c3e':score>=60?'#c8830a':'#b83030';
+  ring.style.borderColor = color;
+  ring.style.color = color;
+  document.getElementById('score-pct').textContent = score + '%';
+  document.getElementById('score-lbl').textContent = passed?'ناجح ✅':'راسب ❌';
+  document.getElementById('result-title').textContent = passed ? '🎉 مبروك، لقد نجحت!' : '📚 يمكنك المراجعة';
+  document.getElementById('result-sub').textContent = passed
+    ? 'حققت نتيجة ممتازة في اختبار اليوم ' + DAY
+    : 'مراجعة المادة ستساعدك على التحسن';
+
+  // Breakdown
+  if(_quizData && answers.length){
+    const qs = _quizData.questions;
+    let correct=0,wrong=0,skip=0;
+    answers.forEach((a,i)=>{ if(a===null) skip++; else if(a===qs[i].ans) correct++; else wrong++; });
+    document.getElementById('result-breakdown').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:var(--g4);border-radius:10px;padding:10px"><div style="font-size:1.3rem;font-weight:900;color:var(--g1)">${correct}</div><div style="font-size:.7rem;color:var(--muted)">صحيحة</div></div>
+        <div style="background:var(--red2);border-radius:10px;padding:10px"><div style="font-size:1.3rem;font-weight:900;color:var(--red)">${wrong}</div><div style="font-size:.7rem;color:var(--muted)">خاطئة</div></div>
+        <div style="background:#f3f4f6;border-radius:10px;padding:10px"><div style="font-size:1.3rem;font-weight:900;color:#6b7280">${skip}</div><div style="font-size:.7rem;color:var(--muted)">غير مجابة</div></div>
+      </div>`;
+  }
+  showScreen('s-result');
+}
+
+// ══ REVIEW ══
+window.showReview = function(){
+  if(!_quizData) return;
+  const qs = _quizData.questions;
+  const area = document.getElementById('review-area');
+  area.innerHTML = qs.map((q,i)=>{
+    const given = _answers[i];
+    const correct = q.ans;
+    const isRight = given === correct;
+    return `<div class="q-card" style="border-color:${isRight?'var(--g3)':'var(--red)'}">
+      <div style="font-size:.7rem;font-weight:800;color:${isRight?'var(--g1)':'var(--red)'};margin-bottom:4px">${isRight?'✅ صحيح':'❌ خاطئ'} · س${i+1}</div>
+      <div style="font-weight:800;font-size:.88rem;margin-bottom:10px;line-height:1.6">${q.q}</div>
+      ${q.opts.map((o,j)=>{
+        let cls = 'opt-btn';
+        if(j===correct) cls+=' correct';
+        else if(j===given && j!==correct) cls+=' wrong';
+        return `<button class="${cls}" disabled>${j===correct?'✅ ':j===given?'❌ ':''} ${o}</button>`;
+      }).join('')}
+      <div style="background:var(--g4);border-radius:8px;padding:8px 10px;font-size:.78rem;color:var(--g1);margin-top:6px;line-height:1.5">💡 ${q.exp}</div>
+    </div>`;
+  }).join('');
+  showScreen('s-review');
+};
+
+// ══ START ══
+window.addEventListener('load', ()=>{ setTimeout(init, 300); });
+</script>
+</body>
+</html>
